@@ -1,0 +1,126 @@
+---
+title: "Hands on with ANN"
+output: html_notebook
+---
+
+```{r}
+#importing the reuters dataset
+library(keras)
+reuters = dataset_reuters(num_words = 10000)
+
+#the data set is already split into train and test set. Checking the structure of both train and test
+str(reuters$train$x)
+str(reuters$test$x)
+summary(reuters$train)
+summary(reuters$test)
+
+#just checked to make sure both the train and test data have the same number of classes
+unique(reuters$train$y)
+unique(reuters$test$y)
+
+
+# Neural Networks requires a matrix where each row represents an example and each column represent an attribute of that example. Therefore, to prepare this data for neural networks we need to make sure that all examples have the same number of columns ( that is, they are vectors of the same length). To do this, we do onehot encoding of each example to turn them into vectors of 0s and 1s.
+#This would mean for instance, turning the sequence [1,2,2,8,….] into a 10000 dimensional vector that would be all zeros except for indices 1,2,8, etc. In other words, we turn each news article into a 10000 dimensional binary vector which indicates which of the top 10000 frequent words occur in that article.
+
+one_hot_encoding=function(x, dimension=10000) {
+encoded=matrix(0,length(x),dimension)
+for (i in 1:length(x))
+encoded[i, x[[i]]]=1
+encoded}
+
+#new train and test variables for scaling and make sure everything is still the same
+reuters_train = reuters$train
+reuters_test = reuters$test
+summary(reuters_train)
+summary(reuters_test)
+
+#one hot encoding the train and test data
+reuters_train$x = one_hot_encoding(reuters_train$x)
+reuters_test$x = one_hot_encoding(reuters_test$x)
+
+
+
+
+```
+
+1. ANN model to classify reuters news article into 46 classes.The labels are vectors of integers between 0-45 representing the category of each news article. There are 2 hidden layers of 128 neurons each. With an epoch of 30 and a batch size of 100, the current model has a loss of 0.07 and an accuracy of 0.95 on the train data. When the performance is evaluated on the test data, the loss is at 1.21 and the accuracy at 0.79. The large gap between the loss of the test and train data is a strong indication of overfitting.
+```{r}
+#configure and build the model
+
+model = keras_model_sequential() %>%
+  layer_dense(units = 128, activation = 'relu', input_shape = ncol(reuters_train$x)) %>% 
+  layer_dense(units = 128, activation = 'relu') %>%
+  layer_dense(units = 46, activation = 'softmax') 
+
+#compile the model
+model %>% compile(
+  optimizer = 'adam',
+  loss = 'sparse_categorical_crossentropy',
+  metrics = c('accuracy'))
+
+#fit the model
+set.seed(128)
+model %>% fit(reuters_train$x, #training data
+              reuters_train$y, #train labels
+              epochs= 30, 
+              batch_size = 100
+              )
+#let's compute the accuracy of the model on the test data using evaluate
+model %>% evaluate(reuters_test$x, reuters_test$y)
+
+
+```
+
+2.Let's further split the train data set into a validation and train set and run tfrun. It appears the best run had an accuracy of 0.82. This can be seen in the attached runprint image. The hyper-parameter combination for that best model were at 196 neurons in the hidden layers with the sigmoid activation function.  The epoch for that run was 30 with a batch size of 500. The learning rate combination was 0.0001. The learning curve for the best run and the summary of flags combination can be found in the bestrun attached image. The loss for the training data are lower than the loss for the validation. There is a very noticeable gap between the two therefore it is safe to conclude the model did overfit. According to the learning curve of the best model, it seems the rate of decrease for the validation loss slowed at around 10 epochs. It is at that 10 epoch mark that the validation loss curve seems to shape like a straight line. 
+```{r}
+
+reuters_val = list()
+reuters_Newtrain = list()
+reuters_val$x = reuters_train$x[1:1000,] #validation data
+reuters_val$y = reuters_train$y[1:1000] #validation labels
+#keep the rest for training
+reuters_Newtrain$x = reuters_train$x[1001:8982,]
+reuters_Newtrain$y = reuters_train$y[1001:8982]
+
+install.packages("tfruns")
+library(tfruns)
+run = tuning_run("reutersflags.R", flags = list(nodes = c(32, 64, 196),learning_rate= c(0.01, 0.05, 0.001, 0.0001), batch_size=c(50,100,250, 500),epochs=c(30,50,100),activation=c("relu","sigmoid","tanh")), sample = 0.20)
+
+#Let's view where the model with the highest validation accuracy is
+which.max(run$metric_val_accuracy)
+max(run$metric_val_accuracy)
+
+#view the summary of the best run
+view_run(run$run_dir[43])
+
+```
+ 3. Let's train the model again using the tuned hyper-parameters on both train and validation data. The newly tuned model has a loss of 1.60 and an accuracy of 0.64. When evaluated on the test data, the model gives a loss of 1.67 and an accuracy of 0.63 which is a much better improvement.
+```{r}
+
+#configure and build the model
+
+model = keras_model_sequential() %>%
+  layer_dense(units = 196, activation = 'sigmoid', input_shape = ncol(reuters_train$x)) %>% 
+  layer_dense(units = 196, activation = 'sigmoid') %>%
+  layer_dense(units = 46, activation = 'softmax') 
+
+#compile the model
+
+model %>% compile(
+  optimizer = optimizer_adam(lr=0.0001),
+  loss = 'sparse_categorical_crossentropy',
+  metrics = c('accuracy'))
+
+#fit the model
+set.seed(128)
+model %>% fit(reuters_train$x, #training data
+              reuters_train$y, #train labels
+              epochs= 30, 
+              batch_size = 500
+              )
+#evaluate the newly tuned model on the test data
+model %>% evaluate(reuters_test$x, reuters_test$y)
+
+
+```
+
