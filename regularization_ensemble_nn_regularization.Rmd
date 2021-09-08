@@ -1,0 +1,430 @@
+---
+title: "Regularization/Ensemble/Neural Network example on regression"
+output: html_notebook
+---
+
+
+```{r}
+housing = read.csv("housing.csv", stringsAsFactors = TRUE)
+
+#remove the first column
+housing = housing[-1]
+
+
+```
+
+# Section 1. Data Cleaning
+
+1. After removing the first column in the original data set, the summary of the data set indicates that there is a total of 1460 observations of 80 features. Out of these 80 features, 36 are numerical and 44 are categorical. 
+```{r}
+library(dplyr)
+str(housing)
+
+```
+
+2. It appears the following 19 variables have missing values: LotFrontage, Alley, MasVnrType, MasVnrArea, BsmtQual, BsmtCond, BsmtExposure, BsmtFintype1, BsmtFintype2, Electrical, FireplaceQu, GarageType, GarageYrBlt, GarageFinish, GarageQual, GarageCond, PoolQC, Fence, MiscFeature. This comes up to 5.96% of columns with NA. However, the data description indicates that some of the NAs do not represent missing values instead values that are not applicable.
+```{r}
+colSums(is.na(housing))
+
+```
+
+```{r}
+sum(colMeans(is.na(housing)))
+
+
+#percentage of columns with missing values
+(sum(colMeans(is.na(housing))) / ncol(housing)) *100
+
+
+```
+
+3. There appears to be a total of 61 rows with outliers in the SalePrice variable.
+```{r}
+IQR  = IQR(housing$SalePrice)
+quantile(housing$SalePrice)
+left = 129975 - 1.5*IQR
+right = 214000 + 1.5*IQR
+outliers = housing[housing$SalePrice<left | housing$SalePrice >right,]
+outliers
+```
+
+The boxplot of SalePrice confirms that there are definitely outliers
+```{r}
+boxplot(housing$SalePrice)
+```
+
+```{r}
+outliersplot = boxplot(housing$SalePrice, plot=FALSE)$out
+#display the sale price outliers which seem to be mainly to the right of Q3
+outliersplot
+
+#remove outliers
+housing = housing[-which(housing$SalePrice %in% outliersplot),]
+
+```
+
+4. Let's replace the NAs that do not represent missing values based on the data description with 0 for numerical variables and notApplicable for categorical variables. I will also replace the NAs in GarageYrBlt with 0. Although that variable is not described in the data description as NA meaning not applicable, it is obvious that the corresponding NA rows are similar to the not applicable of GarageType and GarageFinish.
+```{r}
+
+housing$Alley = as.character(housing$Alley)
+housing$Alley[is.na(housing$Alley)] = "notApplicable"
+housing$Alley = as.factor(housing$Alley)
+
+housing$BsmtQual = as.character(housing$BsmtQual)
+housing$BsmtQual[is.na(housing$BsmtQual)] = "notApplicable"
+housing$BsmtQual = as.factor(housing$BsmtQual)
+
+housing$BsmtCond = as.character(housing$BsmtCond)
+housing$BsmtCond[is.na(housing$BsmtCond)] = "notApplicable"
+housing$BsmtCond = as.factor(housing$BsmtCond)
+
+housing$BsmtExposure = as.character(housing$BsmtExposure)
+housing$BsmtExposure[is.na(housing$BsmtExposure)] = "notApplicable"
+housing$BsmtExposure = as.factor(housing$BsmtExposure)
+
+housing$BsmtFinType1 = as.character(housing$BsmtFinType1)
+housing$BsmtFinType1[is.na(housing$BsmtFinType1)] = "notApplicable"
+housing$BsmtFinType1 = as.factor(housing$BsmtFinType1)
+
+housing$BsmtFinType2 = as.character(housing$BsmtFinType2)
+housing$BsmtFinType2[is.na(housing$BsmtFinType2)] = "notApplicable"
+housing$BsmtFinType2 = as.factor(housing$BsmtFinType2)
+
+housing$FireplaceQu = as.character(housing$FireplaceQu)
+housing$FireplaceQu[is.na(housing$FireplaceQu)] = "notApplicable"
+housing$FireplaceQu = as.factor(housing$FireplaceQu)
+
+housing$GarageType = as.character(housing$GarageType)
+housing$GarageType[is.na(housing$GarageType)] = "notApplicable"
+housing$GarageType = as.factor(housing$GarageType)
+
+housing$GarageYrBlt = as.character(housing$GarageYrBlt)
+housing$GarageYrBlt[is.na(housing$GarageYrBlt)] = 0
+housing$GarageYrBlt = as.factor(housing$GarageYrBlt)
+
+housing$GarageFinish = as.character(housing$GarageFinish)
+housing$GarageFinish[is.na(housing$GarageFinish)] = "notApplicable"
+housing$GarageFinish = as.factor(housing$GarageFinish)
+
+housing$GarageQual = as.character(housing$GarageQual)
+housing$GarageQual[is.na(housing$GarageQual)] = "notApplicable"
+housing$GarageQual = as.factor(housing$GarageQual)
+
+housing$GarageCond = as.character(housing$GarageCond)
+housing$GarageCond[is.na(housing$GarageCond)] = "notApplicable"
+housing$GarageCond = as.factor(housing$GarageCond)
+
+housing$PoolQC = as.character(housing$PoolQC)
+housing$PoolQC[is.na(housing$PoolQC)] = "notApplicable"
+housing$PoolQC = as.factor(housing$PoolQC)
+
+housing$Fence = as.character(housing$Fence)
+housing$Fence[is.na(housing$Fence)] = "notApplicable"
+housing$Fence = as.factor(housing$Fence)
+
+housing$MiscFeature = as.character(housing$MiscFeature)
+housing$MiscFeature[is.na(housing$MiscFeature)] = "notApplicable"
+housing$MiscFeature = as.factor(housing$MiscFeature)
+
+```
+
+5. After replacing the not applicable NAs, LotFrontage, MasVnrArea, MasVnrType, and Electrical still have NAs. That comes up to a percentage of 0.24%.
+```{r}
+colSums(is.na(housing))
+(sum(colMeans(is.na(housing))) / ncol(housing)) *100
+
+
+```
+
+6. There are 262 rows with one or more missing values. That comes up to a percentage of 18.72 which is quite high. Therefore, it would not be wise in my opinion to remove the rows with missing values
+```{r}
+sum(!complete.cases(housing))
+(sum(!complete.cases(housing)) / nrow(housing)) *100
+
+
+```
+
+# Section 2. Data Exploration
+
+8. The histogram of SalePrice shows that the variable is only slightly skewed positively.
+```{r}
+hist(housing$SalePrice)
+```
+After computing the log of SalePrice, it still appears the variable is skewed but this time slightly negatively skewed.
+```{r}
+#change saleprice to log to make it symmetric for training
+housing$SalePrice = log(housing$SalePrice)
+#I am renaming so I don't forget these are log values
+names(housing)[names(housing) == "SalePrice"] = "log_SalePrice"
+
+hist(housing$log_SalePrice)
+
+
+```
+
+9. A look at the scatter and side by side plots of all variables against the log_SalePrice target variable indicates that there might be a correlation with all variables except: MSSUBClass, LotFrontage, MassVnrArea, LowQualFinSF, BedroomAbvGr, KitchenAbvGr, TotRoomAbvGr, WoodDeckSF, OpenPorchSF, EnclosedPorch, MiscVal.
+```{r}
+plot(housing$log_SalePrice ~., data = housing)
+
+
+```
+
+10. There are still NAs in the data set. Two of the columns with NA, MasVnrType and Electrical are categorical.
+```{r}
+colSums(is.na(housing))
+
+#create a partition of training and testing set
+library(caret)
+inTrain = createDataPartition(housing$log_SalePrice, p=0.8, list=FALSE)
+housing_train = housing[inTrain,] 
+housing_test = housing[-inTrain,]
+
+#Imputation for the categorical columns with NA using the mode of that column from training
+t_cat1 = table(housing_train$MasVnrType)
+housing_train$MasVnrType[is.na(housing_train$MasVnrType)] = names(t_cat1[t_cat1 == max(t_cat1)])
+housing_test$MasVnrType[is.na(housing_test$MasVnrType)] = names(t_cat1[t_cat1 == max(t_cat1)])
+
+t_cat2 = table(housing_train$Electrical)
+housing_train$Electrical[is.na(housing_train$Electrical)] = names(t_cat2[t_cat2 == max(t_cat2)])
+housing_test$Electrical[is.na(housing_test$Electrical)] = names(t_cat2[t_cat2 == max(t_cat2)])
+```
+
+Let's make sure there are no more categorical variables with NA
+```{r}
+colSums(is.na(housing_train))
+```
+
+```{r}
+colSums(is.na(housing_test))
+
+```
+
+# Section 3. Creating Predictive Models
+
+## Section 3.1. Creating Regularized Linear Regression Models
+
+11.Lasso Linear Regression Model:
+The coefficients of the best tuned models indicate that the Lasso model did shrink some of the coefficients to zero. This means that those variables corresponding to the shrunk coefficients were deemed irrelevant or not predictive.
+```{r}
+install.packages("glmnet")
+install.packages("RANN")
+library(RANN)
+library(glmnet)
+attach(housing_train)
+set.seed(1)
+#preProc=”knnImpute” and na.action=na.pass options inside the train method to let caret impute the missing values using knn based on the training data during cross validation. But that works mainly with numeric values
+lassoModel  = train(log_SalePrice ~., data = housing_train, method = "glmnet",trControl= trainControl("cv", number = 10),na.action=na.pass, preProc=c("knnImpute", "nzv"), tuneGrid = expand.grid(alpha = 1, lambda = 10^seq(-3, 3, length = 150)))
+
+#coefficients of best tuned model
+coef(lassoModel$finalModel, lassoModel$bestTune$lambda)
+```
+
+The RMSE of the lasso model comes up to 21523.
+```{r}
+
+#prediction on test data
+lassoPredictions  = predict(lassoModel, housing_test, na.action=na.pass)
+RMSE(exp(lassoPredictions), exp(housing_test$log_SalePrice))
+```
+
+12. Ridge Linear Regression Model:
+The RMSE of the ridge model is 21693 which is slighty higher than the lasso model.
+```{r}
+set.seed(1)
+#preProc=”knnImpute” and na.action=na.pass options inside the train method to let caret impute the missing values using knn based on the training data during cross validation. But that works mainly with numeric values
+ridgeModel  = train(log_SalePrice ~., data = housing_train, method = "glmnet",trControl= trainControl("cv", number = 10),na.action=na.pass, preProc=c("knnImpute", "nzv"), tuneGrid = expand.grid(alpha = 0, lambda = 10^seq(-3, 3, length = 150)))
+
+#prediction on test data
+ridgePredictions  = predict(ridgeModel, housing_test, na.action=na.pass)
+RMSE(exp(ridgePredictions), exp(housing_test$log_SalePrice))
+```
+
+
+13. Elastic Net Linear Regression Model:
+The RMSE of the elastic model is at 21693 which is the same as the RMSE of the ridge model.
+```{r}
+set.seed(1)
+enetModel = train(log_SalePrice ~., data = housing_train, method = "glmnet",trControl= trainControl("cv", number = 10), na.action=na.pass, preProc=c("knnImpute", "nzv"), tuneGrid= expand.grid(alpha =seq(0,1, length=10), lambda = 10^seq(-3, 3, length = 150)))
+
+#prediction on test data
+enetPredictions  = predict(enetModel, housing_test, na.action=na.pass)
+RMSE(exp(enetPredictions), exp(housing_test$log_SalePrice))
+```
+
+
+## Section 3.2 Tree-Ensembles Models
+
+14. Random Forest Model: The RMSE for the model came to 21296
+```{r}
+set.seed(1)
+#importance = T is so that the variable can compute the variable importance
+#let caret auto tune the hyper parameters
+rfModel = train(log_SalePrice ~ ., data = housing_train, method = "rf", trControl= trainControl("cv", number = 10), na.action=na.pass, preProc=c("knnImpute", "nzv"), importance = T)
+
+#prediction on test data
+rfPredictions  = predict(rfModel, housing_test, na.action=na.pass)
+RMSE(exp(rfPredictions), exp(housing_test$log_SalePrice))
+
+
+```
+
+14.1 A look at the variable importance shows that 20 variables were found to be the most predictive for the random forest model: OverallQual, GrLivArea, TotalBsmtSF, BsmtFinSF1, LotArea, GarageArea, OverallCond, YearBuilt, GarageCars, X1stFlrSF, YearRemodAdd, X2ndFlrSF, MSZoningRM, BsmtUnfSF, Fireplaces, MSSubClass, BsmtQualGd, FireplaceQunotApplicable, LotFrontage, GarageTypeDetchd
+```{r}
+varImp(rfModel)
+
+```
+
+15. Gradient Boosted Tree Model: 
+The RMSE of the model is at 20030 which is much better than the other 4 models.
+```{r}
+set.seed(1)
+#gbm doesn't need the imputation knnImpute as it can be trained directly with missing values
+gbmModel = train(log_SalePrice ~ ., data = housing_train, method = "gbm", trControl= trainControl("cv", number = 10), na.action=na.pass, preProc=c("nzv"))
+
+#prediction on test data
+gbmPredictions  = predict(gbmModel, housing_test, na.action = na.pass)
+RMSE(exp(gbmPredictions), exp(housing_test$log_SalePrice))
+
+```
+
+16. The resample method confirms that each model was trained using 10 folds cross validation. The mean RMSE of the best tuned parameters of all 5 models don't differ much from each other. However, the mean RMSE shown by the resample function confirms that the Gradient Boost model performed better with this data set so far since it also did well in out of sample performance with the lowest RMSE. Another point to note is that the ridge and elastic net have the same mean RMSE just like they did with the out of sample RMSE.
+```{r}
+#resample will compare the best model for lasso, ridge and elastic net, compares their performance across the 10 folds and prints a summary stats for each model across the 10 folds
+compare=resamples(list(L=lassoModel,R=ridgeModel,E=enetModel, rf = rfModel, g = gbmModel))
+compare
+summary(compare)
+
+```
+## Section 3.3 Creating a neural network
+
+17.let's split the training set into a training and validation set. However, I will merge again the train and test data so that the one hot encoding process of question 19 returns the same number of variables for train/test/validation set. Scaling the numeric values before one hot encoding will make it easier to have to find and remove the one hot encoded values so that they are not also scaled. The actual splitting of the training set into training and validation is performed on question 19.
+
+```{r}
+#merge training and test
+housingMerged = rbind(housing_train, housing_test)
+
+```
+
+18. Let's also center and scale the numeric features without the feature variable and do knnImpute.
+
+```{r}
+#scale the numeric values
+preproc = preProcess(housingMerged[-80], 
+                     method= c("knnImpute", "center", "scale", "nzv")) 
+housingMerged = predict(preproc, housingMerged[-80]) 
+
+
+```
+
+19.One hot encode the categorical variables. Then do the actual splitting into train/test/validation
+
+```{r}
+
+install.packages("mltools")
+library(mltools)
+library(data.table)
+
+#one hot encode
+housingMerged = one_hot(as.data.table(housingMerged), dropUnusedLevels = TRUE)
+housingMerged = as.data.frame(housingMerged)
+
+#append back the feature variable
+housingMerged = cbind(housingMerged, log_SalePrice = housing$log_SalePrice)
+
+#split into train and test
+inTrain = createDataPartition(housingMerged$log_SalePrice, p=0.8, list=FALSE)
+housingNeural_train = housingMerged[inTrain,]
+housingNeural_test = housingMerged[-inTrain,]
+
+#further split the train set into train and validation
+inTrain = createDataPartition(housingNeural_train$log_SalePrice, p=0.9, list=FALSE)
+housingNeural_val = housingNeural_train[-inTrain,]
+housingNeural_train = housingNeural_train[inTrain,]
+
+
+```
+
+20. Build the ANN model
+
+```{r}
+library(keras)
+
+#set the labels
+housingNeural_trainLabel = housingNeural_train$log_SalePrice
+housingNeural_valLabel = housingNeural_val$log_SalePrice
+
+#change the train and val to matrix
+housingNeural_train = as.matrix(housingNeural_train)
+housingNeural_val = as.matrix(housingNeural_val)
+
+
+model  = keras_model_sequential() %>%
+  layer_dense(units = 10, activation = "relu",input_shape= dim(housingNeural_train)[2]) %>%
+  layer_dropout(0.6)%>%
+  layer_dense(units = 10, activation = "relu") %>%
+  layer_dropout(0.6)%>%
+  layer_dense(units = 1)
+
+model %>% compile(loss = "mse", optimizer = "sgd" )
+
+set.seed(128)
+model %>% fit(housingNeural_train, housingNeural_trainLabel ,
+                         epochs = 25, batch_size=100,
+              validation_data = list(housingNeural_val, housingNeural_valLabel)
+              )
+
+#model tuning
+install.packages("tfruns")
+library(tfruns)
+run = tuning_run("housingFlags.R", flags = list(nodes1 = c(32, 64, 196),drop_out1 = c(0.3, 0.4, 0.5), nodes2 = c(32, 64, 196),drop_out2 = c(0.3, 0.4, 0.5), learning_rate= c(0.01, 0.05, 0.001, 0.0001), batch_size=c(50,100,250, 500),epochs=c(30,50,100),activation=c("relu","sigmoid","tanh")),
+                 sample = .010)
+run
+
+```
+
+21.The model with the best run is found at directory 98. A look at the graph of that best run can be found in the best_run attachment. It appears the best run had a validation loss of 0.11 with 32 nodes used in the first hidden layer and 64 in the second hidden layer. The drop out rate for the first hidden layer was at 0.4 and for the second it was at 0.5. The batch size was 50 with 30 epochs and learning rate of 0.05. The sigmoid activation function was applied to that best model. The curve from the best run seems to indicate that the model doesn't overfit.
+```{r}
+#let's view where the model with the lowest loss is
+library(dplyr)
+min(run$metric_val_loss, na.rm = TRUE)
+which.min(run$metric_val_loss)
+view_run(run$run_dir[98])
+
+
+```
+
+22. After using all the training data with the best hyper tuned parameters on the neural network model, the RMSE is now at 62069 which is the highest of all trained models.
+```{r}
+#merge the training and validation set
+train = rbind(housingNeural_train, housingNeural_val)
+trainLabel = c(housingNeural_trainLabel, housingNeural_valLabel)
+
+model  = keras_model_sequential() %>%
+  layer_dense(units = 32, activation = "sigmoid",input_shape= ncol(train)) %>%
+  layer_dropout(0.4)%>%
+  layer_dense(units = 64, activation = "sigmoid") %>%
+  layer_dropout(0.5)%>%
+  layer_dense(units = 1)
+
+model %>% compile(loss = "mse", 
+                  optimizer = optimizer_sgd(lr=0.05) )
+
+set.seed(128)
+model %>% fit(train, trainLabel ,
+                         epochs = 30, batch_size=50,
+              )
+
+#These are the predicted labels
+predictions = model %>% predict(as.matrix(housingNeural_test))
+RMSE(exp(predictions), exp(housingNeural_test$log_SalePrice))
+
+
+```
+23. The RMSE of the neural network on the test data is at 62069. This is the highest RMSE of all models used on the dataset. The gradient boosted tree model was the best performer on the dataset in general.
+```{r}
+
+compare=resamples(list(L=lassoModel,R=ridgeModel,E=enetModel, rf = rfModel, g = gbmModel))
+
+summary(compare)
+
+```

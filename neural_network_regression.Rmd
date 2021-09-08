@@ -1,0 +1,240 @@
+---
+title: "Hands on with ANN problem 2"
+output: html_notebook
+---
+
+1. The data set hitters has 20 variables of 322 observations. There are 3 categorical variables and 17 numerical variables. The salary variable has 59 missing values. The histogram of the salary variable shows that the data set is positively skewed hence the majority of salary are lower than the average salary. Based on that histogram one can go as far as assuming that most baseball players probably make less money.
+```{r}
+hitters = read.csv("hitters.csv", stringsAsFactors = TRUE)
+str(hitters)
+
+#any missing values
+colSums(is.na(hitters))
+colSums(hitters == "?")
+hist(hitters$Salary)
+
+
+```
+
+2. Let's remove the observations with missing salary values
+```{r}
+hitters = hitters[complete.cases(hitters),]
+
+
+```
+
+3. The side by side box plots and t-test show that there is no relation between salary and league as well as salary and NeWLeague. If we assume the alpha value to be at 0.005, then there is a relationship between salary and division.
+The first grouping of numeric variables (hittersNumeric1) indicates that there all the variables have a positive relationship with Salary based on the correlation coefficient although the relationship is not strong. Although CAtBat has a better positive correlation at 0.53. None of the variables in that numeric grouping have a negative association.
+The second grouping of numeric variables (hittersNumeric2) shows that there is a negative correlation between salary and Errors. Salary has a weak relationship with Assists. Salary has a stronger positive relationship with CHits, CHmRun, CRuns and CRBI. The relationship with CWalks and PutOuts is slightly positive.
+```{r}
+install.packages("psych")
+library(psych)
+pairs.panels(hitters[-c(20,15,14)])
+attach(hitters)
+
+#side by side box plots between salary and the other categorical variables
+plot(Salary ~ League, main = "League")
+t.test(Salary ~ League, data = hitters)
+
+plot(Salary ~ Division, main = "Division")
+t.test(Salary ~ Division, data = hitters)
+
+plot(Salary ~ NewLeague, main = "NewLeague")
+t.test(Salary ~ NewLeague, data = hitters)
+
+#There are 17 numeric variables so for better visibility I will split them in 2 different numeric data frames
+
+hittersNumeric1 = hitters[,c("AtBat", "Hits", "HmRun", "Runs", "RBI", "Walks", "Years", "CAtBat", "Salary")]
+pairs.panels(hittersNumeric1)
+
+hittersNumeric2 = hitters[,c("CHits", "CHmRun", "CRuns", "CRBI", "CWalks", "PutOuts", "Assists", "Errors", "Salary")]
+pairs.panels(hittersNumeric2)
+
+
+```
+
+4.
+```{r}
+set.seed(1)
+
+```
+
+5. The partition below partition the dataset into hitters_train, and hitters_test (use 90% for training and 10% for testing)
+```{r}
+library(caret)
+
+#creates a random 90%-10% split of data  such that the distribution of the target variable hitters$salary is preserved in each split.The list = FALSE option avoids returning the data as a list.
+inTrain = createDataPartition(hitters$Salary, p=0.9, list=FALSE)
+
+#inTrain is a vector of indices used to get the training and test data
+hitters_train = hitters[inTrain,] 
+hitters_test = hitters[-inTrain,]
+
+
+```
+
+6. Convert categorical variables to numeric using ifelse
+```{r}
+
+hitters_train$League = ifelse(hitters_train$League == "A", 1, 0)
+hitters_train$Division = ifelse(hitters_train$Division == "E", 1, 0)
+hitters_train$NewLeague = ifelse(hitters_train$League == "A", 1, 0)
+
+hitters_test$League = ifelse(hitters_test$League == "A", 1, 0)
+hitters_test$Division = ifelse(hitters_test$Division == "E", 1, 0)
+hitters_test$NewLeague = ifelse(hitters_test$League == "A", 1, 0)
+
+```
+
+7. Replace the salary column with log(salary)
+```{r}
+hitters_train$Salary = log(hitters_train$Salary)
+#I chose to rename salary so I can remember that this is the log
+names(hitters_train)[names(hitters_train) == "Salary"] = "log_salary"
+hitters_test$Salary = log(hitters_test$Salary)
+names(hitters_test)[names(hitters_test) == "Salary"] = "log_salary"
+
+
+#why we are predicting log of salary instead of salary. The histogram of the log shows a symmetric distribution:
+#Salary variable is right-skewed. A skewed target variable can make a machine learningmodel biased. For instance, in this case lower salaries are more frequent in the trainingdata compared to the higher salaries. Therefore, a machine learning model trained onthis data is less likely to successfully predict higher salaries. When we take the log of aright-skewed distribution, it makes the distribution more symmetrical.
+
+#The range of salary is very large causing the gradients of the loss function to also belarge. Multiplying a chain of large gradients during backpropagation can result innumeric overflow and you might see a NAN value for loss function after a few epochsof training. This is called exploding gradient problem. By predicting the salary in thelog scale we can avoid the exploding gradients problem for this dataset.
+
+
+
+
+```
+
+8. let's split the train data set into a train and validation set
+```{r}
+inTrain = createDataPartition(hitters_train$log_salary, p=0.9, list=FALSE)
+hitters_val = hitters_train[-inTrain,]
+hitters_train = hitters_train[inTrain,] 
+
+```
+
+9. scale the numeric variables except the dummy variables created in question 6 and the outcome salary variable
+```{r}
+
+hitters_trainScaled = scale(hitters_train[-c(20, 19, 15, 14)])
+col_means_train = attr(hitters_trainScaled, "scaled:center")
+col_stddevs_train = attr(hitters_trainScaled, "scaled:scale")
+hitters_valScaled = scale(hitters_val[-c(20, 19, 15, 14)], center = col_means_train, scale = col_stddevs_train)
+hitters_testScaled = scale(hitters_test[-c(20, 19, 15, 14)], center = col_means_train, scale = col_stddevs_train)
+
+#let's append the dummy variables back
+hitters_trainScaled = cbind(hitters_trainScaled, hitters_train$NewLeague, hitters_train$Division, hitters_train$League)
+#label with the log salary to predict
+hitters_trainScaledlabel = hitters_train$log_salary
+
+hitters_valScaled = cbind(hitters_valScaled, hitters_val$NewLeague, hitters_val$Division, hitters_val$League)
+#label with the log salary to predict
+hitters_valScaledlabel = hitters_val$log_salary
+
+hitters_testScaled = cbind(hitters_testScaled, hitters_test$NewLeague, hitters_test$Division, hitters_test$League)
+#label with the log salary to predict
+hitters_testScaledlabel = hitters_test$log_salary
+
+
+
+```
+
+Let's create an ANN model to predict log(salary). It appears the best mean squared error on the validation data is at 0.30. The hyper parameters combination for that best run were 64 neurons in the hidden layer, batch size of 50 and epoch of 100, activation function of 'relu' and learning rate of 0.05. The learning curve for that best run can be seen in the bestrun_problem2 attached file. According to that learning curve, it doesn't look like the model still overfit. However, the mse for the training data was 0.08. That's still a slight case of overfitting given the gap with the mse of the validation data at 0.30. The validation_loss seem to stop decreasing at roughly around 8 epoch.
+```{r}
+
+model  = keras_model_sequential() %>%
+  layer_dense(units = 10, activation = "relu",input_shape= dim(hitters_trainScaled)[2]) %>%
+  layer_dense(units = 10, activation = "relu") %>%
+  layer_dense(units = 1)
+
+model %>% compile(loss = "mse", optimizer = "sgd" )
+
+set.seed(128)
+class(hitters_valScaled)
+model %>% fit(hitters_trainScaled, hitters_trainScaledlabel ,
+                         epochs = 25, batch_size=100,
+              validation_data = list(hitters_valScaled, hitters_valScaledlabel))
+
+#let's tune the model
+install.packages("tfruns")
+library(tfruns)
+run = tuning_run("hittersFlags.R", flags = list(nodes = c(32, 64, 196),learning_rate= c(0.01, 0.05, 0.001, 0.0001), batch_size=c(50,100,250, 500),epochs=c(30,50,100),activation=c("relu","sigmoid","tanh")),
+                 sample = .20)
+
+#let's view where the model with the lowest loss is
+which.min(run$metric_val_loss)
+min(run$metric_val_loss)
+view_run(run$run_dir[37])
+
+
+
+```
+
+10.Let's use the tuned hyper-parameters on the test data. The tuned model returns a loss of 0.05. The RMSE of the test data after applying the model is at 651.98. The standard deviation on the test data is at 454
+```{r}
+model  = keras_model_sequential() %>%
+  layer_dense(units = 64, activation = "relu",input_shape= dim(hitters_trainScaled)[2]) %>%
+  layer_dense(units = 64, activation = "relu") %>%
+  layer_dense(units = 1)
+
+model %>% compile(loss = "mse", 
+                  optimizer = optimizer_sgd(lr=0.05) )
+
+set.seed(128)
+model %>% fit(hitters_trainScaled, hitters_trainScaledlabel ,
+                         epochs = 100, batch_size=50)
+
+#These are the predicted labels
+predictions = model %>% predict(hitters_testScaled)
+
+#rmse for the predicted versus actual
+rmse= function(x,y){ return((mean((x -y)^2))^0.5)}
+rmse(exp(predictions), exp(hitters_testScaledlabel))
+
+summary(exp(hitters_testScaledlabel))
+sd(exp(hitters_testScaledlabel))
+
+
+```
+
+11. Let's use a stepwise linear regression model with forward feature selection, the RMSE on the train data is at 314.78. The RMSE on the test data is at 563. That RMSE seems to indicate that there is still a case of overfitting and it is lower than the RMSE on the neural network model. When going with a backward feature selection, the same variables were selected and the RMSE on the train data is at 320. The RMSE on the test data is the same as with a forward selection at 563. Therefore, it appears the stepwise regression model performs better than the neural network model in this case.
+```{r}
+#forward selection
+install.packages("leaps")
+library(leaps)
+library(caret)
+train.control = trainControl(method = "cv", number = 20)
+
+#let's combine the train and validation data and keep the test data as is
+hitters_train = rbind(hitters_train, hitters_val)
+attach(hitters_train)
+
+set.seed(1)
+step.model = train(exp(log_salary) ~., data = hitters_train, method = "leapForward", trControl = train.control)
+step.model #Hits and CRBI were the variable used. Our earlier exploratory analysis did show a relationship between salary and these 2 features
+summary(step.model$finalModel)
+
+#let's test the model on the test data
+salaryPredict = predict(step.model, hitters_test)
+summary(salaryPredict)
+summary(exp(hitters_test$log_salary))
+
+#The rmse of the model on the test data
+rmse = sqrt(mean((exp(hitters_test$log_salary)-salaryPredict)^2))
+
+#backward feature selection
+step.modelback = train(exp(log_salary) ~., data = hitters_train, method = "leapBackward", trControl = train.control)
+step.modelback
+summary(step.modelback$finalModel)
+
+#let's test the model on the test data
+salaryPredict = predict(step.modelback, hitters_test)
+#The rmse of the model on the test data
+rmse = sqrt(mean((exp(hitters_test$log_salary)-salaryPredict)^2))
+
+
+
+```
+
+
+
