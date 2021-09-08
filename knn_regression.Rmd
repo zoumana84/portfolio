@@ -1,0 +1,278 @@
+---
+title: "Assignment 2 Problem 1"
+output: html_notebook
+---
+
+1. Load the data set and name the headers
+```{r}
+adult = read.csv("adult.data", strip.white = TRUE, stringsAsFactors = TRUE)
+colnames(adult) = c("age", "workclass", "fnlwgt", "education", "educationnum", "maritalstatus", 
+                    "occupation", "relationship", "race", "sex", "capitalgain", "capitalloss",
+                    "hoursperweek", "nativecountry", "income")
+
+
+```
+
+2. Exploring the structure of the dataset, we can see that there are 15 variables of 32560 observations. The statistical summary of the data set shows 9 categorical variables and 6 numerical variables. None of the variables have a missing value assuming missing values are marked as NA. However, the data summary shows that some values are marked as"?" which could represented missing values. 3 features, workclass, occupation and native country do have the value "?" for a total of 4262
+```{r}
+str(adult)
+summary(adult)
+colSums(is.na(adult))
+colSums(adult == "?")
+sum(colSums(adult == "?"))
+
+```
+
+3. The frequency table of income variable shows 75.9% of income under or equal to 50,000 are represented with only 24.08% of income higer than 50,000 are represented. This indicates the data sample might not balanced.
+```{r}
+t = table(adult$income)
+prop.table(t)*100
+attach(adult)
+
+```
+
+4. The related attributes are: age, hours per week, educationnum, workclass, education, marital status, occupation, relationship, race, sex, native country. Capital gain and capital loss have a lot of zero values in their cells which their statistical summary seems to prove as well. This can also be seen in the plots. Therefore, the p-value result might not be very accurate. The feature fnlwgt has a p-value higher than the accepted 0.05, therefore that feature is not needed.
+```{r}
+#numerical variables
+plot(age~income)
+t.test(age~income, data = adult)
+
+plot(fnlwgt~income)
+t.test(fnlwgt~income, data = adult)
+
+plot(capitalgain~income)
+t.test(capitalgain~income, data = adult)
+summary(capitalgain)
+
+plot(capitalloss~income)
+t.test(capitalloss~income, data = adult)
+summary(capitalloss)
+
+plot(hoursperweek~income)
+t.test(hoursperweek~income, data = adult)
+
+plot(educationnum~income)
+t.test(educationnum~income, data = adult)
+
+#categorical variables
+install.packages("gmodels")
+library(gmodels)
+
+CrossTable(x = workclass, y = income, chisq = TRUE)
+table(workclass, income)
+
+CrossTable(x = education, y = income,chisq = TRUE)
+table(education, income)
+
+CrossTable(x = maritalstatus, y = income,chisq = TRUE)
+table(maritalstatus, income)
+
+CrossTable(x = occupation, y = income,chisq = TRUE)
+table(occupation, income)
+
+CrossTable(x = relationship, y = income,chisq = TRUE)
+table(relationship, income)
+
+CrossTable(x = race, y = income,chisq = TRUE)
+table(race, income)
+
+CrossTable(x = sex, y = income,chisq = TRUE)
+table(sex, income)
+
+CrossTable(x = nativecountry, y = income,chisq = TRUE)
+table(nativecountry, income)
+
+
+```
+
+5. Replace ? with NA
+```{r}
+
+
+#make a copy of the data frame. Those with ?, workclass, occupation(within rows), nativecountry
+adult1 = as.data.frame(adult)
+attach(adult1)
+
+#number of "?" before removal
+sum(is.na(adult1$workclass))
+length(adult1$workclass[adult1$workclass == "?"])
+adult1$workclass = as.character(adult1$workclass)
+adult1$workclass[adult1$workclass == "?"] = NA
+adult1$workclass = as.factor(adult1$workclass)
+#check to make sure the replacement was successful
+sum(is.na(adult1$workclass))
+
+#number of "?" before removal
+sum(is.na(adult1$occupation))
+length(adult1$occupation[adult1$occupation == "?"])
+adult1$occupation = as.character(adult1$occupation)
+adult1$occupation[adult1$occupation == "?"] = NA
+adult1$occupation = as.factor(adult1$occupation)
+#check to make sure the replacement was successful
+sum(is.na(adult1$occupation))
+
+
+#number of "?" before removal
+sum(is.na(adult1$nativecountry))
+length(adult1$nativecountry[adult1$nativecountry == "?"])
+adult1$nativecountry = as.character(adult1$nativecountry)
+adult1$nativecountry[adult1$nativecountry == "?"] = NA
+adult1$nativecountry = as.factor(adult1$nativecountry)
+#check to make sure the replacement was successful
+sum(is.na(adult1$nativecountry))
+
+```
+
+6. The workclass, occupation and native country columns have missing values
+```{r}
+ colSums(is.na(adult1))
+
+```
+
+7. Replace missing values with mean for numerical columns and mode for categorical columns
+```{r}
+
+t = table(adult1$workclass)
+adult1$workclass[is.na(adult1$workclass)] = names(t[t == max(t)])
+
+t = table(adult1$nativecountry)
+adult1$nativecountry[is.na(adult1$nativecountry)] = names(t[t == max(t)])
+
+t = table(adult1$occupation)
+adult1$occupation[is.na(adult1$occupation)] = names(t[t == max(t)])
+
+#make sure the operation was successful
+colSums(is.na(adult1))
+
+
+```
+
+8. Using one-hot-encoding to convert categorical variables into numeric indices
+```{r}
+library(data.table)
+install.packages("mltools")
+library(mltools)
+
+#Let's remove capital gain, capital loss and fnlwgt since we won't use them for the prediction
+
+adult1 = adult1[-c(3, 11, 12)]
+
+#convert the data frame into a data table and do one hot
+dfadult1 = one_hot(as.data.table(adult1), cols = c("workclass", "education", "maritalstatus", "occupation", "relationship", "race", "sex", "nativecountry"), dropUnusedLevels = TRUE)
+
+#convert back to a data frame
+dfadult1 = as.data.frame(dfadult1)
+
+
+```
+
+9
+```{r}
+set.seed(1)
+
+
+```
+
+10. Let's scale all numeric features using min-max scaling 
+```{r}
+
+#min-max normalization function
+normalize = 
+  function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+  }
+#normalize all numeric features except the income feature
+dfadult1_n = sapply(dfadult1[-103], normalize)
+
+```
+
+11. Randomize the order of the rows in the dataset
+```{r}
+dfadult1_n = dfadult1_n[sample(nrow(dfadult1_n), replace = FALSE),]
+
+#normalize again
+dfadult1_n = sapply(dfadult1[-103], normalize)
+
+```
+
+12. Using 5 fold cross validations with knn, the cross validation error is 0.17
+```{r}
+install.packages("caret")
+library(caret)
+library(class)
+
+
+
+knn_fold=function(features,target,fold,k){
+  train=features[-fold,]
+  validation=features[fold,]
+  train_labels=target[-fold]
+  validation_labels=target[fold]
+  validation_preds=knn(train,validation,train_labels,k=k)
+  t= table(validation_labels,validation_preds) #compares validation with prediction
+  error=(t[1,2]+t[2,1])/(t[1,1]+t[1,2]+t[2,1]+t[2,2])
+  return(error)
+}
+
+crossValidationError=function(features,target,k){ 
+  folds=createFolds(target,k=k)
+  errors=sapply(folds,knn_fold,features=features,
+  target=target,k=k)
+  return(mean(errors))
+}
+
+crossValidationError(dfadult1_n, dfadult1$income, 5)
+
+
+```
+
+13. Let's fine tune k. Based on the plot of cross validation errors for different k, it appears the model performs better with an error of 0.165 when k is at 25.
+```{r}
+
+ks=c(2,10,15,20, 25,30, 35,40,45,50, sqrt(nrow(dfadult1)) )
+#error returns the error for each value of K
+errors=sapply(ks,crossValidationError, features=dfadult1_n,target=dfadult1$income)
+errors
+#let's plot these errors to have a better view
+plot(errors~ks, type = "o", main="Cross validation Error vs K", xlab="k", ylab="CVError")
+
+
+```
+
+14. Based on the two cross validations tests, I will select k as 25. The FPR returned to be 0.09 and the FNR is at 0.39.
+```{r}
+library(caret)
+library(class)
+
+
+knn_foldFPRFNR=function(features,target,fold,k){
+  train=features[-fold,]
+  validation=features[fold,]
+  train_labels=target[-fold]
+  validation_labels=target[fold]
+  validation_preds=knn(train,validation,train_labels,k=k)
+  t= table(validation_labels,validation_preds) #compares validation with prediction
+  FPR=t[1,2]/(t[1,2]+t[1,1])
+  FNR=t[2,1]/(t[2,1]+t[2,2])
+  return (c("FPR"=FPR,"FNR"=FNR))
+}
+
+
+crossValidationErrorFPRFNR=function(features,target,k){
+  folds=createFolds(target,k=k)
+  errors=sapply(folds,knn_foldFPRFNR,features=features,target=target,k=k)
+  return(rowMeans(errors))
+}
+
+fprfnrerrors = crossValidationErrorFPRFNR(dfadult1_n, dfadult1$income, 25)
+fprfnrerrors
+
+
+
+
+```
+
+15. If we had a majority classifier that always predicted income to be <50k, one issue would be that the wrong features were probably selected to predict the income. The FNR is also likely higher than the FPR in that case. I would suspect also that the value of K chosen might not be correct especially if all prediction go to the <50k column. The cross validation error computed in question 13 would do better than that majority classifier because the k chosen as a result of that cross validation error returns an acceptable FPR and FNR.
+
+
+16. The FPR of the majority classifier is the classification of how many instances are classified with income <50k. The FNR would be the instances classified under income >50k. Since we know that the majority classifier always predict income to be <50k, then its FPR is likely very high and close to 1 with a near zero FNR. In comparison to the FPR and FNR computed in question 14, there is a huge disproportion. I would assume the k chosen for that majority classifier was probably very low compared to the k I selected.

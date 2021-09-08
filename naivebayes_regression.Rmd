@@ -1,0 +1,86 @@
+---
+title: "Assignment 2 Problem 2"
+output: html_notebook
+---
+
+1. 
+```{r}
+set.seed(1)
+```
+
+2. Based on the data exploration in problem 1, all categorical features are kept for the prediction. All numerical features except fnlwgt, capitalgain and capitalloss will be kept for the prediction. These numerical features are binned as follow:
+```{r}
+adult2 = adult1
+
+adult2$age = bin_data(adult1$age, bins = 5, binType = "explicit")
+adult2$educationnum = bin_data(adult1$educationnum, bins = 4, binType = "explicit")
+adult2$hoursperweek = bin_data(adult1$hoursperweek, bins = 3, binType = "explicit")
+
+#frequency table for naive bayes minus the income feature
+nadult2 = as.data.frame(adult2[-12])
+
+```
+
+3. 5 fold cross validation with Naive Bayes
+```{r}
+install.packages("e1071")
+install.packages("caret")
+library(e1071)
+library(caret)
+
+
+naiveBayes_fold=function(fold,features,target,laplace=0){
+  train=features[-fold,]
+  validation=features[fold,]
+  train_labels=target[-fold]
+  validation_labels=target[fold]
+  NaiveBayes_model=naiveBayes(train,train_labels,laplace=laplace)
+  validation_preds=predict(NaiveBayes_model, validation)
+  t= table(validation_labels,validation_preds)
+  error=(t[1,2]+t[2,1])/(t[1,1]+t[1,2]+t[2,1]+t[2,2])
+  return (error)
+}
+
+crossValidationError=function(features,target,laplace=0,n_folds){
+  folds=createFolds(target,k=n_folds)
+  errors=sapply(folds,naiveBayes_fold,features=features,target=target,laplace=laplace)
+  return(mean(errors))
+}
+
+nberrors = crossValidationError(nadult2, adult2$income, n_folds = 5)
+nberrors
+
+
+
+
+```
+
+4. The cross validation error of the Naive Bayes at 0.191 does not perform better than the cross validation error of KNN. Adjusting the laplacian to 1 does not improve the cross validation error of the Naive Bayes because it increases to 0.192.
+
+
+5.The FPR of Naive Bayes would be much lower than the FPR of the majority classifier. The FNR of the Naive Bayes would be higher than the one of the majority classifier.
+```{r}
+naiveBayes_fold=function(fold,features,target,laplace=0){
+  train=features[-fold,]
+  validation=features[fold,]
+  train_labels=target[-fold]
+  validation_labels=target[fold]
+  NaiveBayes_model=naiveBayes(train,train_labels,laplace=laplace)
+  validation_preds=predict(NaiveBayes_model, validation)
+  t= table(validation_labels,validation_preds)
+  FPR=t[1,2]/(t[1,2]+t[1,1])
+  FNR=t[2,1]/(t[2,1]+t[2,2])
+  return (c("FPR"=FPR,"FNR"=FNR))
+}
+
+crossValidationError=function(features,target,laplace=0,n_folds){
+  folds=createFolds(target,k=n_folds)
+  errors=sapply(folds,naiveBayes_fold,features=features,target=target,laplace=laplace)
+  return(rowMeans(errors))
+}
+
+nberrors = crossValidationError(nadult2, adult2$income, n_folds = 5)
+nberrors
+
+```
+
