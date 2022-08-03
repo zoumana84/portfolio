@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accessToken' of 'ls_formula1_databricks'"
 		},
+		"ls_formula1_storage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_formula1_storage'"
+		},
 		"ls_formula1_databricks_properties_typeProperties_existingClusterId": {
 			"type": "string",
 			"defaultValue": "0726-155654-d94drhe8"
@@ -27,7 +31,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Ingest Circuits File",
+						"name": "Ingest Race File",
 						"type": "DatabricksNotebook",
 						"dependsOn": [],
 						"policy": {
@@ -39,11 +43,83 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"notebookPath": "/Users/pcoulibaly@valorem.com/formula1/Ingestion/1.Ingest_circuits_file"
+							"notebookPath": "/Users/pcoulibaly@valorem.com/formula1/Ingestion/2.Ingest_race_file"
 						},
 						"linkedServiceName": {
 							"referenceName": "ls_formula1_databricks",
 							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Get Folder Details",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "00.00:10:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_formula1_raw",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"exists"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "JsonReadSettings"
+							}
+						}
+					},
+					{
+						"name": "If Folder Exists",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Get Folder Details",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@activity('Get Folder Details').output.exists",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Ingest Circuits File",
+									"type": "DatabricksNotebook",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "00.00:10:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Users/pcoulibaly@valorem.com/formula1/Ingestion/1.Ingest_circuits_file"
+									},
+									"linkedServiceName": {
+										"referenceName": "ls_formula1_databricks",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
 						}
 					}
 				],
@@ -60,7 +136,33 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_formula1_databricks')]"
+				"[concat(variables('factoryId'), '/linkedServices/ls_formula1_databricks')]",
+				"[concat(variables('factoryId'), '/datasets/ds_formula1_raw')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_formula1_raw')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_formula1_storage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "circuits",
+						"folderPath": "pcoulibaly/raw",
+						"container": "training"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_formula1_storage')]"
 			]
 		},
 		{
@@ -77,6 +179,19 @@
 						"value": "[parameters('ls_formula1_databricks_accessToken')]"
 					},
 					"existingClusterId": "[parameters('ls_formula1_databricks_properties_typeProperties_existingClusterId')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_formula1_storage')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_formula1_storage_connectionString')]"
 				}
 			},
 			"dependsOn": []

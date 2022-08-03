@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accessToken' of 'ls_formula1_databricks'"
 		},
+		"ls_formula1_storage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_formula1_storage'"
+		},
 		"ls_formula1_databricks_properties_typeProperties_existingClusterId": {
 			"type": "string",
 			"defaultValue": "0726-155654-d94drhe8"
@@ -44,6 +48,9 @@
 					},
 					"ls_formula1_databricks_accessToken": {
 						"value": "[parameters('ls_formula1_databricks_accessToken')]"
+					},
+					"ls_formula1_storage_connectionString": {
+						"value": "[parameters('ls_formula1_storage_connectionString')]"
 					},
 					"ls_formula1_databricks_properties_typeProperties_existingClusterId": {
 						"value": "[parameters('ls_formula1_databricks_properties_typeProperties_existingClusterId')]"

@@ -8,6 +8,9 @@
 		"ls_formula1_databricks_accessToken": {
 			"value": ""
 		},
+		"ls_formula1_storage_connectionString": {
+			"value": ""
+		},
 		"ls_formula1_databricks_properties_typeProperties_existingClusterId": {
 			"value": "0726-155654-d94drhe8"
 		},
