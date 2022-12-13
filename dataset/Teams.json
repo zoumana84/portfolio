@@ -1,0 +1,22 @@
+{
+	"name": "Teams",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datakind_test_ls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "nfl_teams",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "nfl_teams.xls",
+				"folderPath": "NFL",
+				"container": "datakind"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	}
+}
