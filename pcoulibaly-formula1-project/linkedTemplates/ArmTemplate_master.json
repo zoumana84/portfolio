@@ -7,6 +7,14 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "pcoulibaly-formula1-project"
 		},
+		"GitHub1_credential": {
+			"type": "secureString",
+			"metadata": "Secure string for 'credential' of 'GitHub1'"
+		},
+		"datakind_test_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'datakind_test_ls'"
+		},
 		"ls_formula1_databricks_accessToken": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accessToken' of 'ls_formula1_databricks'"
@@ -14,6 +22,10 @@
 		"ls_formula1_storage_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ls_formula1_storage'"
+		},
+		"GitHub1_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "zoumana84"
 		},
 		"ls_formula1_databricks_properties_typeProperties_existingClusterId": {
 			"type": "string",
@@ -46,11 +58,20 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"GitHub1_credential": {
+						"value": "[parameters('GitHub1_credential')]"
+					},
+					"datakind_test_ls_connectionString": {
+						"value": "[parameters('datakind_test_ls_connectionString')]"
+					},
 					"ls_formula1_databricks_accessToken": {
 						"value": "[parameters('ls_formula1_databricks_accessToken')]"
 					},
 					"ls_formula1_storage_connectionString": {
 						"value": "[parameters('ls_formula1_storage_connectionString')]"
+					},
+					"GitHub1_properties_typeProperties_username": {
+						"value": "[parameters('GitHub1_properties_typeProperties_username')]"
 					},
 					"ls_formula1_databricks_properties_typeProperties_existingClusterId": {
 						"value": "[parameters('ls_formula1_databricks_properties_typeProperties_existingClusterId')]"
