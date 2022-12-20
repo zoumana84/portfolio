@@ -17,6 +17,39 @@
 			},
 			"firstRowAsHeader": true
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "team_name",
+				"type": "String"
+			},
+			{
+				"name": "team_name_short",
+				"type": "String"
+			},
+			{
+				"name": "team_id",
+				"type": "String"
+			},
+			{
+				"name": "team_id_pfr",
+				"type": "String"
+			},
+			{
+				"name": "team_conference",
+				"type": "String"
+			},
+			{
+				"name": "team_division",
+				"type": "String"
+			},
+			{
+				"name": "team_conference_pre2002",
+				"type": "String"
+			},
+			{
+				"name": "team_division_pre2002",
+				"type": "String"
+			}
+		]
 	}
 }

@@ -1,0 +1,17 @@
+{
+	"name": "ds_KenFoodInsecuritySrc",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_IPC",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "population-tracking-tool/data/2017,2022/?export=true&condition=A&country=KE"
+			}
+		}
+	}
+}
