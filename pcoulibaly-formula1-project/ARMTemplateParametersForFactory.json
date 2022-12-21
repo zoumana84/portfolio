@@ -5,9 +5,6 @@
 		"factoryName": {
 			"value": "pcoulibaly-formula1-project"
 		},
-		"GitHub1_credential": {
-			"value": ""
-		},
 		"datakind_test_ls_connectionString": {
 			"value": ""
 		},
@@ -17,11 +14,29 @@
 		"ls_formula1_storage_connectionString": {
 			"value": ""
 		},
-		"GitHub1_properties_typeProperties_username": {
-			"value": "zoumana84"
+		"ls_injectionsa_connectionString": {
+			"value": ""
 		},
 		"ls_formula1_databricks_properties_typeProperties_existingClusterId": {
 			"value": "0726-155654-d94drhe8"
+		},
+		"ls_IPC_properties_typeProperties_url": {
+			"value": "https://map.ipcinfo.org/api/public/"
+		},
+		"ls_humData_properties_typeProperties_url": {
+			"value": "https://data.humdata.org/dataset/"
+		},
+		"ls_hotosm_properties_typeProperties_url": {
+			"value": "https://export.hotosm.org/downloads/"
+		},
+		"ls_fewsDataSomFoodSecurity_properties_typeProperties_url": {
+			"value": "https://fdw.fews.net/api/ipcpackage/?country_code=SO&collection_date="
+		},
+		"ls_fewsDataKenFoodSecurity_properties_typeProperties_url": {
+			"value": "https://fdw.fews.net/api/ipcpackage/?country_code=KE&collection_date="
+		},
+		"ls_fewsData_properties_typeProperties_url": {
+			"value": "https://fdw.fews.net/api/marketpricefacts/"
 		}
 	}
 }
