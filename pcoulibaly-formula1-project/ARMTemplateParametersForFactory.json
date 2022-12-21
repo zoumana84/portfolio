@@ -17,26 +17,26 @@
 		"ls_injectionsa_connectionString": {
 			"value": ""
 		},
-		"ls_formula1_databricks_properties_typeProperties_existingClusterId": {
-			"value": "0726-155654-d94drhe8"
-		},
 		"ls_IPC_properties_typeProperties_url": {
 			"value": "https://map.ipcinfo.org/api/public/"
 		},
-		"ls_humData_properties_typeProperties_url": {
-			"value": "https://data.humdata.org/dataset/"
-		},
-		"ls_hotosm_properties_typeProperties_url": {
-			"value": "https://export.hotosm.org/downloads/"
-		},
-		"ls_fewsDataSomFoodSecurity_properties_typeProperties_url": {
-			"value": "https://fdw.fews.net/api/ipcpackage/?country_code=SO&collection_date="
+		"ls_fewsData_properties_typeProperties_url": {
+			"value": "https://fdw.fews.net/api/marketpricefacts/"
 		},
 		"ls_fewsDataKenFoodSecurity_properties_typeProperties_url": {
 			"value": "https://fdw.fews.net/api/ipcpackage/?country_code=KE&collection_date="
 		},
-		"ls_fewsData_properties_typeProperties_url": {
-			"value": "https://fdw.fews.net/api/marketpricefacts/"
+		"ls_fewsDataSomFoodSecurity_properties_typeProperties_url": {
+			"value": "https://fdw.fews.net/api/ipcpackage/?country_code=SO&collection_date="
+		},
+		"ls_formula1_databricks_properties_typeProperties_existingClusterId": {
+			"value": "0726-155654-d94drhe8"
+		},
+		"ls_hotosm_properties_typeProperties_url": {
+			"value": "https://export.hotosm.org/downloads/"
+		},
+		"ls_humData_properties_typeProperties_url": {
+			"value": "https://data.humdata.org/dataset/"
 		}
 	}
 }
