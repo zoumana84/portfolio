@@ -1,8 +1,8 @@
 {
-	"name": "ds_KenFoodInsecuritySrc",
+	"name": "ds_KenAdminBoundariesSrc",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "ls_IPC",
+			"referenceName": "ls_humData",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
@@ -13,7 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "HttpServerLocation",
-				"relativeUrl": "population-tracking-tool/data/2017,2022/?export=true&condition=A&country=KE"
+				"relativeUrl": "26801642-7088-4149-9605-6ae282897937/resource/bfe30344-5fb4-45dd-b1d1-565690aba5fc/download/ken_adminboundaries_tabulardata.xlsx"
 			}
 		}
 	}

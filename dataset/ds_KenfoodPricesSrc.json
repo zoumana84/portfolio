@@ -1,0 +1,25 @@
+{
+	"name": "ds_KenfoodPricesSrc",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_humData",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Kenya"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "e0d3fba6-f9a2-45d7-b949-140c455197ff/resource/517ee1bf-2437-4f8c-aa1b-cb9925b9d437/download/wfp_food_prices_ken.csv"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
