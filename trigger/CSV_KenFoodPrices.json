@@ -3,13 +3,20 @@
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Started",
-		"pipelines": [],
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_KenFoodPrices",
+					"type": "PipelineReference"
+				}
+			}
+		],
 		"type": "ScheduleTrigger",
 		"typeProperties": {
 			"recurrence": {
 				"frequency": "Day",
 				"interval": 15,
-				"startTime": "2022-12-21T08:18:00",
+				"startTime": "2022-12-21T08:23:00",
 				"timeZone": "Eastern Standard Time"
 			}
 		}
