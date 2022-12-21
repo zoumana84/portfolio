@@ -1,0 +1,12 @@
+{
+	"name": "ls_hotosm",
+	"properties": {
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://export.hotosm.org/downloads/",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
