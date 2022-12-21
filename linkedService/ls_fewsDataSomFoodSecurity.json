@@ -1,0 +1,12 @@
+{
+	"name": "ls_fewsDataSomFoodSecurity",
+	"properties": {
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://fdw.fews.net/api/ipcpackage/?country_code=SO&collection_date=",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
