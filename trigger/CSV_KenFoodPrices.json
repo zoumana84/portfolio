@@ -1,0 +1,17 @@
+{
+	"name": "CSV_KenFoodPrices",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 15,
+				"startTime": "2022-12-21T08:10:00",
+				"timeZone": "Eastern Standard Time"
+			}
+		}
+	}
+}
