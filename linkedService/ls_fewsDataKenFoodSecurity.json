@@ -1,0 +1,12 @@
+{
+	"name": "ls_fewsDataKenFoodSecurity",
+	"properties": {
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://fdw.fews.net/api/ipcpackage/?country_code=KE&collection_date=",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
