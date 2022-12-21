@@ -1,0 +1,12 @@
+{
+	"name": "ls_fewsData",
+	"properties": {
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://fdw.fews.net/api/marketpricefacts/",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
