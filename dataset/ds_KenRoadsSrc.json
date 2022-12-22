@@ -1,0 +1,20 @@
+{
+	"name": "ds_KenRoadsSrc",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_hotosm",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Kenya"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "6b3f8c4a-589d-4537-99e4-1518937c23a8/hotosm_ken_roads_lines_shp.zip"
+			}
+		}
+	}
+}

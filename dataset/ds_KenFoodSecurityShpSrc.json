@@ -1,0 +1,19 @@
+{
+	"name": "ds_KenFoodSecurityShpSrc",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_fewsDataKenFoodSecurity",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Kenya"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation"
+			}
+		}
+	}
+}

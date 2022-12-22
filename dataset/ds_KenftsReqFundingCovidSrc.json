@@ -1,0 +1,25 @@
+{
+	"name": "ds_KenftsReqFundingCovidSrc",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_humData",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Kenya"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "d0bf93aa-bc16-426b-b53b-c8c90fac98a4/resource/3a313ca0-e283-4763-8ef4-0efeaeeb671f/download/fts_requirements_funding_covid_ken.csv"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

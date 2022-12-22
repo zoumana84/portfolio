@@ -1,0 +1,20 @@
+{
+	"name": "ds_KenPopulationStatistics2019Src",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_humData",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Kenya"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "26801642-7088-4149-9605-6ae282897937/resource/e57fb9a8-96dc-4a21-849b-1ddbc4ed7803/download/ken_admpop_2019.xlsx"
+			}
+		}
+	}
+}
