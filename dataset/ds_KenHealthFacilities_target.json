@@ -1,0 +1,21 @@
+{
+	"name": "ds_KenHealthFacilities_target",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_injectionsa",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "@concat(dataset().Filename,'.xlx')",
+				"folderPath": "target",
+				"container": "datakind"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	}
+}
