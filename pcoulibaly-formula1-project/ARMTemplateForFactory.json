@@ -706,7 +706,8 @@
 				},
 				"parameters": {
 					"Filename": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "KenFoodPrices"
 					}
 				},
 				"annotations": [],
