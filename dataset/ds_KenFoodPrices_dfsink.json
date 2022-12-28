@@ -7,7 +7,8 @@
 		},
 		"parameters": {
 			"Filename": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "KenFoodPrices"
 			}
 		},
 		"annotations": [],
@@ -15,7 +16,10 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "@concat(dataset().Filename,'.csv')",
+				"fileName": {
+					"value": "@concat(dataset().Filename,'.csv')",
+					"type": "Expression"
+				},
 				"folderPath": "target",
 				"container": "datakind"
 			},
