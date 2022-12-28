@@ -1404,9 +1404,6 @@
 					],
 					"transformations": [],
 					"scriptLines": [
-						"parameters{",
-						"     Filename as string",
-						"}",
 						"source(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false) ~> source1",
