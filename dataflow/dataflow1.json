@@ -1,0 +1,37 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_KenFoodPrices_target",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_KenFoodPrices_dfsink",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"description": "Export data to ds_KenFoodPrices_dfsink. This is because HTTP won't work with dataflow. So the data sink from pipeline2 is used in the DF for transformation purposes and then sent to the same sink with a different name"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
