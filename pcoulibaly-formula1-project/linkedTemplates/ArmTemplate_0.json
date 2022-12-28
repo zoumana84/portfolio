@@ -478,7 +478,8 @@
 				},
 				"parameters": {
 					"Filename": {
-						"type": "string"
+						"type": "string",
+						"defaultValue": "KenHealthFacilities"
 					}
 				},
 				"annotations": [],
