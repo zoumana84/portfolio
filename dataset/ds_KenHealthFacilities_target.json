@@ -5,12 +5,20 @@
 			"referenceName": "ls_injectionsa",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"Filename": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "@concat(dataset().Filename,'.csv')",
+				"fileName": {
+					"value": "@concat(dataset().Filename,'.csv')",
+					"type": "Expression"
+				},
 				"folderPath": "target",
 				"container": "datakind"
 			},
