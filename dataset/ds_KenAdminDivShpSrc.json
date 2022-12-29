@@ -6,7 +6,7 @@
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Kenya"
+			"name": "Kenya Binary"
 		},
 		"annotations": [],
 		"type": "Binary",
