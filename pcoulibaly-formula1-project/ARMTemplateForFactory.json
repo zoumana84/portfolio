@@ -793,6 +793,88 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/KenftsFundingGlobalCluster_dfsink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "KenftsFundingGlobalClusterdfsink",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "date",
+						"type": "String"
+					},
+					{
+						"name": "admin1",
+						"type": "String"
+					},
+					{
+						"name": "market",
+						"type": "String"
+					},
+					{
+						"name": "latitude",
+						"type": "String"
+					},
+					{
+						"name": "longitude",
+						"type": "String"
+					},
+					{
+						"name": "category",
+						"type": "String"
+					},
+					{
+						"name": "commodity",
+						"type": "String"
+					},
+					{
+						"name": "unit",
+						"type": "String"
+					},
+					{
+						"name": "priceflag",
+						"type": "String"
+					},
+					{
+						"name": "pricetype",
+						"type": "String"
+					},
+					{
+						"name": "currency",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					},
+					{
+						"name": "usdprice",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Teams')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1033,10 +1115,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@concat(dataset().Filename,'.csv')",
-							"type": "Expression"
-						},
+						"fileName": "KenFoodPrices_dfsink",
 						"folderPath": "target",
 						"container": "datakind"
 					},
@@ -1470,7 +1549,56 @@
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
-				"schema": []
+				"schema": [
+					{
+						"name": "countryCode",
+						"type": "String"
+					},
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "code",
+						"type": "String"
+					},
+					{
+						"name": "startDate",
+						"type": "String"
+					},
+					{
+						"name": "endDate",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "clusterCode",
+						"type": "String"
+					},
+					{
+						"name": "cluster",
+						"type": "String"
+					},
+					{
+						"name": "requirements",
+						"type": "String"
+					},
+					{
+						"name": "funding",
+						"type": "String"
+					},
+					{
+						"name": "percentFunded",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
@@ -1979,7 +2107,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/KenftsFundingClusterDF_copy1')]",
+			"name": "[concat(parameters('factoryName'), '/KenftsFundingGlobalClusterDF')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1997,7 +2125,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "ds_KenftsFundingCluster_dfsink",
+								"referenceName": "KenftsFundingGlobalCluster_dfsink",
 								"type": "DatasetReference"
 							},
 							"name": "sink1",
@@ -2006,12 +2134,41 @@
 					],
 					"transformations": [],
 					"scriptLines": [
-						"source(allowSchemaDrift: true,",
+						"source(output(",
+						"          countryCode as string,",
+						"          id as string,",
+						"          name as string,",
+						"          code as string,",
+						"          startDate as string,",
+						"          endDate as string,",
+						"          year as string,",
+						"          clusterCode as string,",
+						"          cluster as string,",
+						"          requirements as string,",
+						"          funding as string,",
+						"          percentFunded as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     inferDriftedColumnTypes: true,",
 						"     ignoreNoFilesFound: false) ~> source1",
 						"source1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     input(",
+						"          date as string,",
+						"          admin1 as string,",
+						"          market as string,",
+						"          latitude as string,",
+						"          longitude as string,",
+						"          category as string,",
+						"          commodity as string,",
+						"          unit as string,",
+						"          priceflag as string,",
+						"          pricetype as string,",
+						"          currency as string,",
+						"          price as string,",
+						"          usdprice as string",
+						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> sink1"
 					]
@@ -2019,7 +2176,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_KenftsFundingGlobalCluster_target')]",
-				"[concat(variables('factoryId'), '/datasets/ds_KenftsFundingCluster_dfsink')]"
+				"[concat(variables('factoryId'), '/datasets/KenftsFundingGlobalCluster_dfsink')]"
 			]
 		}
 	]
