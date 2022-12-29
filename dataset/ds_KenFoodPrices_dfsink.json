@@ -16,10 +16,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": {
-					"value": "@concat(dataset().Filename,'.csv')",
-					"type": "Expression"
-				},
+				"fileName": "KenFoodPrices_dfsink",
 				"folderPath": "target",
 				"container": "datakind"
 			},
