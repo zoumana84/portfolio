@@ -1,5 +1,5 @@
 {
-	"name": "KenftsFundingClusterDF_copy1",
+	"name": "KenftsFundingGlobalClusterDF",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_KenftsFundingCluster_dfsink",
+						"referenceName": "KenftsFundingGlobalCluster_dfsink",
 						"type": "DatasetReference"
 					},
 					"name": "sink1",
@@ -24,12 +24,41 @@
 			],
 			"transformations": [],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          countryCode as string,",
+				"          id as string,",
+				"          name as string,",
+				"          code as string,",
+				"          startDate as string,",
+				"          endDate as string,",
+				"          year as string,",
+				"          clusterCode as string,",
+				"          cluster as string,",
+				"          requirements as string,",
+				"          funding as string,",
+				"          percentFunded as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     inferDriftedColumnTypes: true,",
 				"     ignoreNoFilesFound: false) ~> source1",
 				"source1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     input(",
+				"          date as string,",
+				"          admin1 as string,",
+				"          market as string,",
+				"          latitude as string,",
+				"          longitude as string,",
+				"          category as string,",
+				"          commodity as string,",
+				"          unit as string,",
+				"          priceflag as string,",
+				"          pricetype as string,",
+				"          currency as string,",
+				"          price as string,",
+				"          usdprice as string",
+				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
