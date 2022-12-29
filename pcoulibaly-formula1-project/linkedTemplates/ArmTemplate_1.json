@@ -179,6 +179,33 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenftsFundingCluster_dfsink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "KenftsFundingCluster_dfsink",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_KenftsFundingCluster_target')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -272,6 +299,33 @@
 					"location": {
 						"type": "HttpServerLocation",
 						"relativeUrl": "d0bf93aa-bc16-426b-b53b-c8c90fac98a4/resource/b6136d9e-24a4-4864-adbc-adef30e62516/download/fts_requirements_funding_globalcluster_ken.csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenftsFundingGlobalCluster_target')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "ds_KenftsFundingGlobalCluster",
+						"folderPath": "target",
+						"container": "datakind"
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
@@ -426,33 +480,6 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"folderPath": "NFL",
-						"container": "datakind"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_KenftsFundingCluster_dfsink')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "KenftsFundingCluster_dfsink",
-						"folderPath": "target",
 						"container": "datakind"
 					},
 					"columnDelimiter": ",",
@@ -774,7 +801,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pl_KenftsFundingClusterSrc')]",
+			"name": "[concat(parameters('factoryName'), '/pl_ds_KenftsFundingGlobalClusterSrc')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -825,14 +852,14 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "ds_KenftsFundingClusterSrc",
+								"referenceName": "ds_KenftsFundingGlobalClusterSrc",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "ds_KenftsFundingCluster_target",
+								"referenceName": "ds_KenftsFundingGlobalCluster_target",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -846,8 +873,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_KenftsFundingClusterSrc')]",
-				"[concat(variables('factoryId'), '/datasets/ds_KenftsFundingCluster_target')]"
+				"[concat(variables('factoryId'), '/datasets/ds_KenftsFundingGlobalClusterSrc')]",
+				"[concat(variables('factoryId'), '/datasets/ds_KenftsFundingGlobalCluster_target')]"
 			]
 		},
 		{
@@ -964,84 +991,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_formula1_raw')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_KenFoodPrices_df_target",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_KenFoodPrices_dfsink",
-								"type": "DatasetReference"
-							},
-							"name": "sink1",
-							"description": "Export data to ds_KenFoodPrices_dfsink. This is because HTTP won't work with dataflow. So the data sink from pipeline2 is used in the DF for transformation purposes and then sent to the same sink with a different name"
-						}
-					],
-					"transformations": [
-						{
-							"name": "select1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          date as string,",
-						"          admin1 as string,",
-						"          admin2 as string,",
-						"          market as string,",
-						"          latitude as string,",
-						"          longitude as string,",
-						"          category as string,",
-						"          commodity as string,",
-						"          unit as string,",
-						"          priceflag as string,",
-						"          pricetype as string,",
-						"          currency as string,",
-						"          price as string,",
-						"          usdprice as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     inferDriftedColumnTypes: true,",
-						"     ignoreNoFilesFound: false) ~> source1",
-						"source1 select(mapColumn(",
-						"          date,",
-						"          admin1,",
-						"          market,",
-						"          latitude,",
-						"          longitude,",
-						"          category,",
-						"          commodity,",
-						"          unit,",
-						"          priceflag,",
-						"          pricetype,",
-						"          currency,",
-						"          price,",
-						"          usdprice",
-						"     ),",
-						"     skipDuplicateMapInputs: false,",
-						"     skipDuplicateMapOutputs: false) ~> select1",
-						"select1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
 		}
 	]
 }
