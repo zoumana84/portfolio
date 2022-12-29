@@ -19,6 +19,55 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "countryCode",
+				"type": "String"
+			},
+			{
+				"name": "id",
+				"type": "String"
+			},
+			{
+				"name": "name",
+				"type": "String"
+			},
+			{
+				"name": "code",
+				"type": "String"
+			},
+			{
+				"name": "startDate",
+				"type": "String"
+			},
+			{
+				"name": "endDate",
+				"type": "String"
+			},
+			{
+				"name": "year",
+				"type": "String"
+			},
+			{
+				"name": "clusterCode",
+				"type": "String"
+			},
+			{
+				"name": "cluster",
+				"type": "String"
+			},
+			{
+				"name": "requirements",
+				"type": "String"
+			},
+			{
+				"name": "funding",
+				"type": "String"
+			},
+			{
+				"name": "percentFunded",
+				"type": "String"
+			}
+		]
 	}
 }
