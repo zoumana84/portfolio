@@ -283,7 +283,7 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Kenya"
+					"name": "Kenya Binary"
 				},
 				"annotations": [],
 				"type": "Binary",
@@ -308,7 +308,7 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Kenya"
+					"name": "Kenya Binary"
 				},
 				"annotations": [],
 				"type": "Binary",
@@ -333,7 +333,7 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Kenya"
+					"name": "Kenya Binary"
 				},
 				"annotations": [],
 				"type": "Binary",
@@ -346,6 +346,92 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_IPC')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenFoodPrices_df_target')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "KenFoodPrices",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "date",
+						"type": "String"
+					},
+					{
+						"name": "admin1",
+						"type": "String"
+					},
+					{
+						"name": "admin2",
+						"type": "String"
+					},
+					{
+						"name": "market",
+						"type": "String"
+					},
+					{
+						"name": "latitude",
+						"type": "String"
+					},
+					{
+						"name": "longitude",
+						"type": "String"
+					},
+					{
+						"name": "category",
+						"type": "String"
+					},
+					{
+						"name": "commodity",
+						"type": "String"
+					},
+					{
+						"name": "unit",
+						"type": "String"
+					},
+					{
+						"name": "priceflag",
+						"type": "String"
+					},
+					{
+						"name": "pricetype",
+						"type": "String"
+					},
+					{
+						"name": "currency",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					},
+					{
+						"name": "usdprice",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
 			]
 		},
 		{
@@ -425,7 +511,7 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Kenya"
+					"name": "Kenya Binary"
 				},
 				"annotations": [],
 				"type": "Binary",
@@ -465,44 +551,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_humData')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_KenHealthFacilities_target')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"Filename": {
-						"type": "string",
-						"defaultValue": "KenHealthFacilities"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@concat(dataset().Filename,'.csv')",
-							"type": "Expression"
-						},
-						"folderPath": "target",
-						"container": "datakind"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
 			]
 		}
 	]
