@@ -151,11 +151,7 @@
 							"description": "Export data to ds_KenFoodPrices_dfsink. This is because HTTP won't work with dataflow. So the data sink from pipeline2 is used in the DF for transformation purposes and then sent to the same sink with a different name"
 						}
 					],
-					"transformations": [
-						{
-							"name": "select1"
-						}
-					],
+					"transformations": [],
 					"scriptLines": [
 						"source(output(",
 						"          date as string,",
@@ -177,24 +173,7 @@
 						"     validateSchema: false,",
 						"     inferDriftedColumnTypes: true,",
 						"     ignoreNoFilesFound: false) ~> source1",
-						"source1 select(mapColumn(",
-						"          date,",
-						"          admin1,",
-						"          market,",
-						"          latitude,",
-						"          longitude,",
-						"          category,",
-						"          commodity,",
-						"          unit,",
-						"          priceflag,",
-						"          pricetype,",
-						"          currency,",
-						"          price,",
-						"          usdprice",
-						"     ),",
-						"     skipDuplicateMapInputs: false,",
-						"     skipDuplicateMapOutputs: false) ~> select1",
-						"select1 sink(allowSchemaDrift: true,",
+						"source1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> sink1"
