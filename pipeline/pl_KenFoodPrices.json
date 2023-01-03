@@ -94,33 +94,6 @@
 					},
 					"traceLevel": "Fine"
 				}
-			},
-			{
-				"name": "ForEach1",
-				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "Copy data1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@activity('Copy data1').output",
-						"type": "Expression"
-					},
-					"activities": [
-						{
-							"name": "If Condition1",
-							"type": "IfCondition",
-							"dependsOn": [],
-							"userProperties": []
-						}
-					]
-				}
 			}
 		],
 		"variables": {
