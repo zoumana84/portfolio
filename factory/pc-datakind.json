@@ -1,0 +1,9 @@
+{
+	"name": "pc-datakind",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "a1e978e1-a031-4290-aeac-348bcc650c61",
+		"tenantId": "5c8085d9-1e88-4bb6-b5bd-e6e6d5b5babd"
+	}
+}
