@@ -24,6 +24,12 @@
 			"transformations": [
 				{
 					"name": "filter1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -54,8 +60,14 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 filter(iif(isNull(Service_names),false(),true())) ~> filter1",
-				"filter1 sink(allowSchemaDrift: true,",
+				"source1 filter(iif(isNull(Code),false(),true())) ~> filter1",
+				"filter1 derive(Service_Names = iifNull({Service_names}, 'Unknown')) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          each(match(name != 'Service_names'))",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> sink1"
