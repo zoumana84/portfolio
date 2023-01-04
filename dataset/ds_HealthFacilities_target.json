@@ -19,6 +19,95 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "Code",
+				"type": "String"
+			},
+			{
+				"name": "Name",
+				"type": "String"
+			},
+			{
+				"name": "Registration_number",
+				"type": "String"
+			},
+			{
+				"name": "Keph level",
+				"type": "String"
+			},
+			{
+				"name": "Facility type",
+				"type": "String"
+			},
+			{
+				"name": "Owner",
+				"type": "String"
+			},
+			{
+				"name": "Regulatory body",
+				"type": "String"
+			},
+			{
+				"name": "Beds",
+				"type": "String"
+			},
+			{
+				"name": "Cots",
+				"type": "String"
+			},
+			{
+				"name": "County",
+				"type": "String"
+			},
+			{
+				"name": "Constituency",
+				"type": "String"
+			},
+			{
+				"name": "Sub county",
+				"type": "String"
+			},
+			{
+				"name": "Ward",
+				"type": "String"
+			},
+			{
+				"name": "Operation status",
+				"type": "String"
+			},
+			{
+				"name": "Open_whole_day",
+				"type": "String"
+			},
+			{
+				"name": "Open_public_holidays",
+				"type": "String"
+			},
+			{
+				"name": "Open_weekends",
+				"type": "String"
+			},
+			{
+				"name": "Open_late_night",
+				"type": "String"
+			},
+			{
+				"name": "Service_names",
+				"type": "String"
+			},
+			{
+				"name": "Approved",
+				"type": "String"
+			},
+			{
+				"name": "Public visible",
+				"type": "String"
+			},
+			{
+				"name": "Closed",
+				"type": "String"
+			}
+		]
 	}
 }

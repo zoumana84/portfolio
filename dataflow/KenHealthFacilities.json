@@ -1,0 +1,65 @@
+{
+	"name": "KenHealthFacilities",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_HealthFacilities_target",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_HealthFacilities_dfTarget",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Code as string,",
+				"          Name as string,",
+				"          Registration_number as string,",
+				"          {Keph level} as string,",
+				"          {Facility type} as string,",
+				"          Owner as string,",
+				"          {Regulatory body} as string,",
+				"          Beds as string,",
+				"          Cots as string,",
+				"          County as string,",
+				"          Constituency as string,",
+				"          {Sub county} as string,",
+				"          Ward as string,",
+				"          {Operation status} as string,",
+				"          Open_whole_day as string,",
+				"          Open_public_holidays as string,",
+				"          Open_weekends as string,",
+				"          Open_late_night as string,",
+				"          Service_names as string,",
+				"          Approved as string,",
+				"          {Public visible} as string,",
+				"          Closed as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 filter(iif(isNull(Service_names),false(),true())) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
