@@ -6,14 +6,14 @@
 			"sources": [
 				{
 					"name": "ds_KenFoodPrices_df_target",
-					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~>  ds_KenFoodPrices_df_target",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ds_KenFoodPrices_df_target",
 					"dataset": {
 						"referenceName": "ds_KenFoodPrices_df_target",
 						"type": "DatasetReference"
 					}
 				}
 			],
-			"script": "section Section1;\r\nshared ds_KenFoodPrices_df_target = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/KenFoodPrices\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"ds_KenFoodPrices_df_target\",\r\n  #\"Removed top rows\" = Table.Skip(Source, 1) in #\"Removed top rows\";\r\n",
+			"script": "section Section1;\r\nshared ds_KenFoodPrices_df_target = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/KenFoodPrices\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"ds_KenFoodPrices_df_target\",\n  #\"Removed top rows\" = Table.Skip(Source, 1),\n  #\"Added custom\" = Table.Profile(#\"Replaced value\") in #\"Removed top rows\";\r\n",
 			"documentLocale": "en-us"
 		}
 	}
