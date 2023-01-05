@@ -13,7 +13,7 @@
 					}
 				}
 			],
-			"script": "section Section1;\r\nshared ds_KenftsFundingGlobalCluster_target = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/ds_KenftsFundingGlobalCluster\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"ds_KenftsFundingGlobalCluster_target\",\r\n  #\"Removed top rows\" = Table.Skip(Source, 1),\r\n  #\"Removed blank rows\" = Table.SelectRows(#\"Removed top rows\", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {\"\", null}))),\r\n  #\"Removed blank rows 1\" = Table.SelectRows(#\"Removed blank rows\", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {\"\", null}))) in #\"Removed blank rows 1\";\r\n",
+			"script": "section Section1;\r\nshared ds_KenftsFundingGlobalCluster_target = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/ds_KenftsFundingGlobalCluster\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"ds_KenftsFundingGlobalCluster_target\",\r\n  #\"Removed top rows\" = Table.Skip(Source, 1) in #\"Removed top rows\";\r\n",
 			"documentLocale": "en-us"
 		}
 	}
