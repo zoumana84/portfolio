@@ -18,31 +18,36 @@
 						"referenceName": "KenftsFundingGlobalCluster_dfsink",
 						"type": "DatasetReference"
 					},
-					"name": "sink1",
-					"description": "Export data to KenftsFundingCluster_dfsink"
+					"name": "sink2"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "split1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          countryCode as string,",
-				"          id as string,",
+				"          id as short,",
 				"          name as string,",
 				"          code as string,",
-				"          startDate as string,",
-				"          endDate as string,",
-				"          year as string,",
-				"          clusterCode as string,",
+				"          startDate as date,",
+				"          endDate as date,",
+				"          year as short,",
+				"          clusterCode as short,",
 				"          cluster as string,",
-				"          requirements as string,",
-				"          funding as string,",
-				"          percentFunded as string",
+				"          requirements as integer,",
+				"          funding as integer,",
+				"          percentFunded as short",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     inferDriftedColumnTypes: true,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
+				"source1 split(contains(array(toString(columns())), isNull(#item)),",
+				"     disjoint: false) ~> split1@(Nulls, good)",
+				"split1@good sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          date as string,",
@@ -60,7 +65,7 @@
 				"          usdprice as string",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true) ~> sink2"
 			]
 		}
 	}
