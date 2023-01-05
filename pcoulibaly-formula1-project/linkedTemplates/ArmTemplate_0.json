@@ -356,6 +356,153 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_HealthFacilities_dfTarget')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "KenHealthFacilitiesTarget",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_HealthFacilities_target')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "KenHealthFacilities",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Code",
+						"type": "String"
+					},
+					{
+						"name": "Name",
+						"type": "String"
+					},
+					{
+						"name": "Registration_number",
+						"type": "String"
+					},
+					{
+						"name": "Keph level",
+						"type": "String"
+					},
+					{
+						"name": "Facility type",
+						"type": "String"
+					},
+					{
+						"name": "Owner",
+						"type": "String"
+					},
+					{
+						"name": "Regulatory body",
+						"type": "String"
+					},
+					{
+						"name": "Beds",
+						"type": "String"
+					},
+					{
+						"name": "Cots",
+						"type": "String"
+					},
+					{
+						"name": "County",
+						"type": "String"
+					},
+					{
+						"name": "Constituency",
+						"type": "String"
+					},
+					{
+						"name": "Sub county",
+						"type": "String"
+					},
+					{
+						"name": "Ward",
+						"type": "String"
+					},
+					{
+						"name": "Operation status",
+						"type": "String"
+					},
+					{
+						"name": "Open_whole_day",
+						"type": "String"
+					},
+					{
+						"name": "Open_public_holidays",
+						"type": "String"
+					},
+					{
+						"name": "Open_weekends",
+						"type": "String"
+					},
+					{
+						"name": "Open_late_night",
+						"type": "String"
+					},
+					{
+						"name": "Service_names",
+						"type": "String"
+					},
+					{
+						"name": "Approved",
+						"type": "String"
+					},
+					{
+						"name": "Public visible",
+						"type": "String"
+					},
+					{
+						"name": "Closed",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_KenAdminBoundariesSrc')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -549,59 +696,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_KenFoodPrices_target')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "KenFoodPrices",
-						"folderPath": "target",
-						"container": "datakind"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_KenFoodSecurityShpSrc')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_fewsDataKenFoodSecurity",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Kenya Binary"
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "HttpServerLocation"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_fewsDataKenFoodSecurity')]"
 			]
 		}
 	]
