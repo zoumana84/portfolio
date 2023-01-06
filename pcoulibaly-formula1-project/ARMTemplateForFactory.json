@@ -509,7 +509,14 @@
 					{
 						"name": "Data flow1",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "Power Query1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -525,7 +532,7 @@
 								"parameters": {},
 								"datasetParameters": {
 									"source1": {},
-									"sink1": {
+									"sink2": {
 										"Filename": "KenFoodPrices"
 									}
 								}
@@ -536,6 +543,57 @@
 								"computeType": "General"
 							},
 							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Power Query1",
+						"type": "ExecuteWranglingDataflow",
+						"dependsOn": [
+							{
+								"activity": "Copy data1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "KenFoodPrices",
+								"type": "DataFlowReference",
+								"datasetParameters": {
+									"ds_KenFoodPrices_df_target": {},
+									"UserQuerydsKenFoodPricesdftarget": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"queries": [
+								{
+									"queryName": "UserQuery",
+									"dataflowSinks": [
+										{
+											"name": "UserQuerydsKenFoodPricesdftarget",
+											"dataset": {
+												"referenceName": "ds_KenFoodPrices_df_target",
+												"type": "DatasetReference",
+												"parameters": {}
+											},
+											"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tdate as string,\n\t\tadmin1 as string,\n\t\tadmin2 as string,\n\t\tmarket as string,\n\t\tlatitude as string,\n\t\tlongitude as string,\n\t\tcategory as string,\n\t\tcommodity as string,\n\t\tunit as string,\n\t\tpriceflag as string,\n\t\tpricetype as string,\n\t\tcurrency as string,\n\t\tprice as string,\n\t\tusdprice as string\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> UserQuerydsKenFoodPricesdftarget"
+										}
+									]
+								}
+							]
 						}
 					}
 				],
@@ -553,7 +611,9 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_KenfoodPricesSrc')]",
 				"[concat(variables('factoryId'), '/datasets/ds_KenFoodPrices_target')]",
-				"[concat(variables('factoryId'), '/dataflows/KenFoodPricesDF')]"
+				"[concat(variables('factoryId'), '/dataflows/KenFoodPricesDF')]",
+				"[concat(variables('factoryId'), '/dataflows/KenFoodPrices')]",
+				"[concat(variables('factoryId'), '/datasets/ds_KenFoodPrices_df_target')]"
 			]
 		},
 		{
@@ -1425,7 +1485,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "part-00000-c3f583ab-e75f-4ba3-b1c6-5d017b15debe-c000.csv",
 						"folderPath": "target",
 						"container": "datakind"
 					},
@@ -2306,11 +2365,15 @@
 								"referenceName": "ds_KenFoodPrices_dfsink",
 								"type": "DatasetReference"
 							},
-							"name": "sink1",
+							"name": "sink2",
 							"description": "Export data to ds_KenFoodPrices_dfsink. This is because HTTP won't work with dataflow. So the data sink from pipeline2 is used in the DF for transformation purposes and then sent to the same sink with a different name"
 						}
 					],
-					"transformations": [],
+					"transformations": [
+						{
+							"name": "split1"
+						}
+					],
 					"scriptLines": [
 						"source(output(",
 						"          date as string,",
@@ -2332,10 +2395,12 @@
 						"     validateSchema: false,",
 						"     inferDriftedColumnTypes: true,",
 						"     ignoreNoFilesFound: false) ~> source1",
-						"source1 sink(allowSchemaDrift: true,",
+						"source1 split(contains(array(toString(columns())), isNull(#item)),",
+						"     disjoint: false) ~> split1@(Nulls, Good)",
+						"split1@Good sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink1"
+						"     skipDuplicateMapOutputs: true) ~> sink2"
 					]
 				}
 			},

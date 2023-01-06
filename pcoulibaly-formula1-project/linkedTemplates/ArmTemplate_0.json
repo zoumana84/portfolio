@@ -683,7 +683,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "part-00000-c3f583ab-e75f-4ba3-b1c6-5d017b15debe-c000.csv",
 						"folderPath": "target",
 						"container": "datakind"
 					},
