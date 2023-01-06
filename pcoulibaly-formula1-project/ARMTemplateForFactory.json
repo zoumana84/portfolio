@@ -2399,6 +2399,7 @@
 						"     disjoint: false) ~> split1@(Nulls, Good)",
 						"split1@Good sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     filePattern:'KenFoodPricesTarget',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> sink2"
 					]
