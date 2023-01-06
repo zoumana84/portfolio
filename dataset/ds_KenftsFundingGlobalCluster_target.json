@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "part-00000-1275b6b3-0ffa-43ac-834d-eb8d75793e6e-c000.csv",
+				"fileName": "ds_KenftsFundingGlobalCluster.csv",
 				"folderPath": "target",
 				"container": "datakind"
 			},
