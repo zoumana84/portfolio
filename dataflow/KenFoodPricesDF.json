@@ -18,11 +18,15 @@
 						"referenceName": "ds_KenFoodPrices_dfsink",
 						"type": "DatasetReference"
 					},
-					"name": "sink1",
+					"name": "sink2",
 					"description": "Export data to ds_KenFoodPrices_dfsink. This is because HTTP won't work with dataflow. So the data sink from pipeline2 is used in the DF for transformation purposes and then sent to the same sink with a different name"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "split1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          date as string,",
@@ -44,10 +48,12 @@
 				"     validateSchema: false,",
 				"     inferDriftedColumnTypes: true,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
+				"source1 split(contains(array(toString(columns())), isNull(#item)),",
+				"     disjoint: false) ~> split1@(Nulls, Good)",
+				"split1@Good sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true) ~> sink2"
 			]
 		}
 	}
