@@ -3160,6 +3160,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
+						"fileName": "SomHealthFacilities",
 						"folderPath": "target",
 						"container": "datakind"
 					},
