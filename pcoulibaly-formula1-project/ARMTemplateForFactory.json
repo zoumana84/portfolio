@@ -3169,14 +3169,39 @@
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
-				"schema": []
+				"schema": [
+					{
+						"name": " Region ",
+						"type": "String"
+					},
+					{
+						"name": " District",
+						"type": "String"
+					},
+					{
+						"name": "Health Facility name",
+						"type": "String"
+					},
+					{
+						"name": "Type:",
+						"type": "String"
+					},
+					{
+						"name": "Latiitude",
+						"type": "String"
+					},
+					{
+						"name": "Longititude",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SomHealthFacilitiesDF')]",
+			"name": "[concat(parameters('factoryName'), '/HealthFacilitiesJoinedDF')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -3189,6 +3214,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_KenHealthFacilitiesTarget",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
 						}
 					],
 					"sinks": [
@@ -3203,15 +3235,63 @@
 					"transformations": [
 						{
 							"name": "split1"
+						},
+						{
+							"name": "split2"
+						},
+						{
+							"name": "join1"
 						}
 					],
 					"scriptLines": [
-						"source(allowSchemaDrift: true,",
+						"source(output(",
+						"          { Region } as string,",
+						"          { District} as string,",
+						"          {Health Facility name} as string,",
+						"          {Type:} as string,",
+						"          Latiitude as double,",
+						"          Longititude as double",
+						"     ),",
+						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false) ~> source1",
+						"source(output(",
+						"          Code as short,",
+						"          Name as string,",
+						"          Registration_number as string,",
+						"          {Keph level} as string,",
+						"          {Facility type} as string,",
+						"          Owner as string,",
+						"          {Regulatory body} as string,",
+						"          Beds as short,",
+						"          Cots as short,",
+						"          County as string,",
+						"          Constituency as string,",
+						"          {Sub county} as string,",
+						"          Ward as string,",
+						"          {Operation status} as string,",
+						"          Open_whole_day as boolean,",
+						"          Open_public_holidays as boolean,",
+						"          Open_weekends as boolean,",
+						"          Open_late_night as boolean,",
+						"          Service_names as string,",
+						"          Approved as boolean,",
+						"          {Public visible} as boolean,",
+						"          Closed as boolean",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source2",
 						"source1 split(contains(array(toString(columns())), isNull(#item)),",
 						"     disjoint: false) ~> split1@(Nulls, Good)",
-						"split1@Good sink(allowSchemaDrift: true,",
+						"source2 split(contains(array(toString(columns())), isNull(#item)),",
+						"     disjoint: false) ~> split2@(Nulls2, Good2)",
+						"split1@Good, split2@Good2 join({Health Facility name} == Name,",
+						"     joinType:'outer',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     filePattern:'SomHealthFacilitiesDFTarget',",
 						"     skipDuplicateMapInputs: true,",
@@ -3221,6 +3301,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_SomHealthFacilitiesTarget')]",
+				"[concat(variables('factoryId'), '/datasets/ds_KenHealthFacilitiesTarget')]",
 				"[concat(variables('factoryId'), '/datasets/ds_SomHealthFacilities_dftarget')]"
 			]
 		},
@@ -3324,6 +3405,289 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_KenHealthFacilities')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_KenHealthFacilitiesExcel",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_KenHealthFacilitiesTarget",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_KenHealthFacilitiesExcel')]",
+				"[concat(variables('factoryId'), '/datasets/ds_KenHealthFacilitiesTarget')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenHealthFacilitiesTarget')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "KenHealthFacilities",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Code",
+						"type": "String"
+					},
+					{
+						"name": "Name",
+						"type": "String"
+					},
+					{
+						"name": "Registration_number",
+						"type": "String"
+					},
+					{
+						"name": "Keph level",
+						"type": "String"
+					},
+					{
+						"name": "Facility type",
+						"type": "String"
+					},
+					{
+						"name": "Owner",
+						"type": "String"
+					},
+					{
+						"name": "Regulatory body",
+						"type": "String"
+					},
+					{
+						"name": "Beds",
+						"type": "String"
+					},
+					{
+						"name": "Cots",
+						"type": "String"
+					},
+					{
+						"name": "County",
+						"type": "String"
+					},
+					{
+						"name": "Constituency",
+						"type": "String"
+					},
+					{
+						"name": "Sub county",
+						"type": "String"
+					},
+					{
+						"name": "Ward",
+						"type": "String"
+					},
+					{
+						"name": "Operation status",
+						"type": "String"
+					},
+					{
+						"name": "Open_whole_day",
+						"type": "String"
+					},
+					{
+						"name": "Open_public_holidays",
+						"type": "String"
+					},
+					{
+						"name": "Open_weekends",
+						"type": "String"
+					},
+					{
+						"name": "Open_late_night",
+						"type": "String"
+					},
+					{
+						"name": "Service_names",
+						"type": "String"
+					},
+					{
+						"name": "Approved",
+						"type": "String"
+					},
+					{
+						"name": "Public visible",
+						"type": "String"
+					},
+					{
+						"name": "Closed",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Main HealthFacilities Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute SomHealthFacilities",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pl_SomHealthFacilities",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute KenHealthFacilities",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pl_KenHealthFacilities",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Execute SomHealthFacilities",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Execute KenHealthFacilities",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "HealthFacilitiesJoinedDF",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"source2": {},
+									"sink2": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_SomHealthFacilities')]",
+				"[concat(variables('factoryId'), '/pipelines/pl_KenHealthFacilities')]",
+				"[concat(variables('factoryId'), '/dataflows/HealthFacilitiesJoinedDF')]"
 			]
 		}
 	]

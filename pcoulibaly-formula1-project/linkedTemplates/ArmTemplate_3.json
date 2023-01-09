@@ -1,0 +1,191 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "pcoulibaly-formula1-project"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_FolderPath_Source": {
+			"type": "string",
+			"defaultValue": "datakind"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_Directory_Source": {
+			"type": "string",
+			"defaultValue": "raw"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_FolderPath_Destination": {
+			"type": "string",
+			"defaultValue": "datakind"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_Directory_Destination": {
+			"type": "string",
+			"defaultValue": "target"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_LastModified_From": {
+			"type": "string",
+			"defaultValue": "@trigger().outputs.windowStartTime"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_LastModified_To": {
+			"type": "string",
+			"defaultValue": "@trigger().outputs.windowEndTime"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger_every_15_minutes')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "CopyNewFilesByLastModifiedDate",
+						"type": "PipelineReference"
+					},
+					"parameters": {
+						"FolderPath_Source": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_FolderPath_Source')]",
+						"Directory_Source": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_Directory_Source')]",
+						"FolderPath_Destination": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_FolderPath_Destination')]",
+						"Directory_Destination": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_Directory_Destination')]",
+						"LastModified_From": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_LastModified_From')]",
+						"LastModified_To": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_LastModified_To')]"
+					}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Minute",
+					"interval": 15,
+					"startTime": "2023-01-09T14:03:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": []
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Main HealthFacilities Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute SomHealthFacilities",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pl_SomHealthFacilities",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute KenHealthFacilities",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pl_KenHealthFacilities",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Execute SomHealthFacilities",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Execute KenHealthFacilities",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "HealthFacilitiesJoinedDF",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"source2": {},
+									"sink2": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CSV_KenFoodPrices')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_KenFoodPrices",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 15,
+						"startTime": "2022-12-21T08:23:00",
+						"timeZone": "Eastern Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
