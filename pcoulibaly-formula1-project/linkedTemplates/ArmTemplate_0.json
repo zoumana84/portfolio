@@ -296,66 +296,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Teams')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "datakind_test_ls",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Excel",
-				"typeProperties": {
-					"sheetName": "nfl_teams",
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "nfl_teams.xls",
-						"folderPath": "NFL",
-						"container": "datakind"
-					},
-					"firstRowAsHeader": true
-				},
-				"schema": [
-					{
-						"name": "team_name",
-						"type": "String"
-					},
-					{
-						"name": "team_name_short",
-						"type": "String"
-					},
-					{
-						"name": "team_id",
-						"type": "String"
-					},
-					{
-						"name": "team_id_pfr",
-						"type": "String"
-					},
-					{
-						"name": "team_conference",
-						"type": "String"
-					},
-					{
-						"name": "team_division",
-						"type": "String"
-					},
-					{
-						"name": "team_conference_pre2002",
-						"type": "String"
-					},
-					{
-						"name": "team_division_pre2002",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/datakind_test_ls')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ds_HealthFacilities_dfTarget')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -692,6 +632,92 @@
 					"quoteChar": "\""
 				},
 				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenFoodPrices_target')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "KenFoodPrices",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "date",
+						"type": "String"
+					},
+					{
+						"name": "admin1",
+						"type": "String"
+					},
+					{
+						"name": "admin2",
+						"type": "String"
+					},
+					{
+						"name": "market",
+						"type": "String"
+					},
+					{
+						"name": "latitude",
+						"type": "String"
+					},
+					{
+						"name": "longitude",
+						"type": "String"
+					},
+					{
+						"name": "category",
+						"type": "String"
+					},
+					{
+						"name": "commodity",
+						"type": "String"
+					},
+					{
+						"name": "unit",
+						"type": "String"
+					},
+					{
+						"name": "priceflag",
+						"type": "String"
+					},
+					{
+						"name": "pricetype",
+						"type": "String"
+					},
+					{
+						"name": "currency",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					},
+					{
+						"name": "usdprice",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
