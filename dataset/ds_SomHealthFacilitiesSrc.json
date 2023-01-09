@@ -1,0 +1,23 @@
+{
+	"name": "ds_SomHealthFacilitiesSrc",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_humData",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Somalia"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "HFs Data",
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "9fd710d4-ab87-43c9-b6da-39847af345b1/resource/3bc1cf5a-a46d-47a5-8f7f-93789f5db5b9/download/health-facilities.xlsx"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	}
+}
