@@ -1,0 +1,33 @@
+{
+	"name": "trigger_every_15_minutes",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipeline": {
+			"pipelineReference": {
+				"referenceName": "CopyNewFilesByLastModifiedDate",
+				"type": "PipelineReference"
+			},
+			"parameters": {
+				"FolderPath_Source": "datakind",
+				"Directory_Source": "raw",
+				"FolderPath_Destination": "datakind",
+				"Directory_Destination": "target",
+				"LastModified_From": "@trigger().outputs.windowStartTime",
+				"LastModified_To": "@trigger().outputs.windowEndTime"
+			}
+		},
+		"type": "TumblingWindowTrigger",
+		"typeProperties": {
+			"frequency": "Minute",
+			"interval": 15,
+			"startTime": "2023-01-09T14:03:00Z",
+			"delay": "00:00:00",
+			"maxConcurrency": 50,
+			"retryPolicy": {
+				"intervalInSeconds": 30
+			},
+			"dependsOn": []
+		}
+	}
+}

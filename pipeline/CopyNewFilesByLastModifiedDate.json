@@ -34,6 +34,9 @@
 								"value": "*",
 								"type": "Expression"
 							}
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
 						}
 					},
 					"sink": {
