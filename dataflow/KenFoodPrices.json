@@ -13,7 +13,7 @@
 					}
 				}
 			],
-			"script": "section Section1;\r\nshared ds_KenFoodPrices_df_target = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/KenFoodPrices\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"ds_KenFoodPrices_df_target\",\n  #\"Removed top rows\" = Table.Skip(Source, 1),\n  #\"Added custom\" = Table.Profile(#\"Replaced value\") in #\"Removed top rows\";\r\n",
+			"script": "section Section1;\r\nshared ds_KenFoodPrices_df_target = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/part-00000-8bc485e3-6ad7-4f50-9047-99bfd94b14c2-c000.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"ds_KenFoodPrices_df_target\",\n  #\"Removed top rows\" = Table.Skip(Source, 1),\n  #\"Added custom\" = Table.Profile(#\"Replaced value\") in #\"Removed top rows\";\r\n",
 			"documentLocale": "en-us"
 		}
 	}
