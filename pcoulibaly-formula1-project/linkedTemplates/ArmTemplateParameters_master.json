@@ -38,6 +38,24 @@
 		"ls_humData_properties_typeProperties_url": {
 			"value": "https://data.humdata.org/dataset/"
 		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_FolderPath_Source": {
+			"value": "datakind"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_Directory_Source": {
+			"value": "raw"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_FolderPath_Destination": {
+			"value": "datakind"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_Directory_Destination": {
+			"value": "target"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_LastModified_From": {
+			"value": "@trigger().outputs.windowStartTime"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_LastModified_To": {
+			"value": "@trigger().outputs.windowEndTime"
+		},
 		"containerUri": {
 			"value": ""
 		},

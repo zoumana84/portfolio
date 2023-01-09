@@ -50,6 +50,30 @@
 		"ls_humData_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://data.humdata.org/dataset/"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_FolderPath_Source": {
+			"type": "string",
+			"defaultValue": "datakind"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_Directory_Source": {
+			"type": "string",
+			"defaultValue": "raw"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_FolderPath_Destination": {
+			"type": "string",
+			"defaultValue": "datakind"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_Directory_Destination": {
+			"type": "string",
+			"defaultValue": "target"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_LastModified_From": {
+			"type": "string",
+			"defaultValue": "@trigger().outputs.windowStartTime"
+		},
+		"trigger_every_15_minutes_properties_pipeline_parameters_LastModified_To": {
+			"type": "string",
+			"defaultValue": "@trigger().outputs.windowEndTime"
 		}
 	},
 	"variables": {
@@ -754,10 +778,12 @@
 								"type": "DelimitedTextSource",
 								"storeSettings": {
 									"type": "HttpReadSettings",
-									"requestMethod": "GET"
+									"requestMethod": "GET",
+									"requestTimeout": ""
 								},
 								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
+									"type": "DelimitedTextReadSettings",
+									"skipLineCount": 1
 								}
 							},
 							"sink": {
@@ -774,6 +800,140 @@
 							"enableStaging": false,
 							"translator": {
 								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "KEN",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "KEN",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1137",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "1137",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Kenya Drought Response Plan 2023",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Kenya Drought Response Plan 2023",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "FKEN23",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "FKEN23",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2023-01-01",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "2023-01-01",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2023-12-31",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "2023-12-31",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2023",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "2023",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Prop_7",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Prop_7",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Not specified",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Not specified",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Prop_9",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Prop_9",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Prop_10",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Prop_10",
+											"type": "String",
+											"physicalType": "String"
+										}
+									}
+								],
 								"typeConversion": true,
 								"typeConversionSettings": {
 									"allowDataTruncation": true,
@@ -873,6 +1033,7 @@
 								"parameters": {},
 								"datasetParameters": {
 									"source1": {},
+									"source2": {},
 									"sink2": {}
 								}
 							},
@@ -1522,7 +1683,64 @@
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
-				"schema": []
+				"schema": [
+					{
+						"name": "date",
+						"type": "String"
+					},
+					{
+						"name": "admin1",
+						"type": "String"
+					},
+					{
+						"name": "admin2",
+						"type": "String"
+					},
+					{
+						"name": "market",
+						"type": "String"
+					},
+					{
+						"name": "latitude",
+						"type": "String"
+					},
+					{
+						"name": "longitude",
+						"type": "String"
+					},
+					{
+						"name": "category",
+						"type": "String"
+					},
+					{
+						"name": "commodity",
+						"type": "String"
+					},
+					{
+						"name": "unit",
+						"type": "String"
+					},
+					{
+						"name": "priceflag",
+						"type": "String"
+					},
+					{
+						"name": "pricetype",
+						"type": "String"
+					},
+					{
+						"name": "currency",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					},
+					{
+						"name": "usdprice",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
@@ -1851,7 +2069,56 @@
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
-				"schema": []
+				"schema": [
+					{
+						"name": "countryCode",
+						"type": "String"
+					},
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "code",
+						"type": "String"
+					},
+					{
+						"name": "startDate",
+						"type": "String"
+					},
+					{
+						"name": "endDate",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "clusterCode",
+						"type": "String"
+					},
+					{
+						"name": "cluster",
+						"type": "String"
+					},
+					{
+						"name": "requirements",
+						"type": "String"
+					},
+					{
+						"name": "funding",
+						"type": "String"
+					},
+					{
+						"name": "percentFunded",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_humData')]"
@@ -2335,7 +2602,7 @@
 							}
 						}
 					],
-					"script": "section Section1;\r\nshared ds_KenFoodPrices_df_target = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/KenFoodPrices\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"ds_KenFoodPrices_df_target\",\n  #\"Removed top rows\" = Table.Skip(Source, 1),\n  #\"Added custom\" = Table.Profile(#\"Replaced value\") in #\"Removed top rows\";\r\n",
+					"script": "section Section1;\r\nshared ds_KenFoodPrices_df_target = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/part-00000-8bc485e3-6ad7-4f50-9047-99bfd94b14c2-c000.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"ds_KenFoodPrices_df_target\",\n  #\"Removed top rows\" = Table.Skip(Source, 1),\n  #\"Added custom\" = Table.Profile(#\"Replaced value\") in #\"Removed top rows\";\r\n",
 					"documentLocale": "en-us"
 				}
 			},
@@ -2582,7 +2849,7 @@
 							}
 						}
 					],
-					"script": "section Section1;\r\nshared ds_KenftsFundingGlobalCluster_target = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/ds_KenftsFundingGlobalCluster\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = ds_KenftsFundingGlobalCluster_target,\r\n  #\"Replaced value\" = Table.ReplaceValue(Source, \"\", null, Replacer.ReplaceValue, {\"two\"}),\r\n  #\"Added custom\" = Table.Profile(#\"Replaced value\"),\r\n  #\"Changed column type\" = Table.TransformColumnTypes(#\"Added custom\", {{\"NullCount\", Int64.Type}}),\r\n  #\"Filtered rows\" = Table.SelectRows(#\"Changed column type\", each [NullCount] = 0),\r\n  Custom = Source,\r\n  #\"Replaced value 1\" = Table.ReplaceValue(Custom, \"\", \"Not provided\", Replacer.ReplaceValue, {\"countryCode\"}),\r\n  #\"Replaced value 2\" = Table.ReplaceValue(#\"Replaced value 1\", \"\", \"Not provided\", Replacer.ReplaceValue, {\"clusterCode\", \"requirements\"}),\r\n  #\"Replaced value 3\" = Table.ReplaceValue(#\"Replaced value 2\", \"\", \"Not provided\", Replacer.ReplaceValue, {\"percentFunded\", \"funding\"}),\r\n  #\"Removed top rows\" = Table.Skip(#\"Replaced value 3\", 1)\r\nin\r\n  #\"Removed top rows\";\r\n",
+					"script": "section Section1;\r\nshared ds_KenftsFundingGlobalCluster_target = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/ds_KenftsFundingGlobalCluster.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = ds_KenftsFundingGlobalCluster_target,\r\n  #\"Replaced value\" = Table.ReplaceValue(Source, \"\", null, Replacer.ReplaceValue, {\"two\"}),\r\n  #\"Added custom\" = Table.Profile(#\"Replaced value\"),\r\n  #\"Changed column type\" = Table.TransformColumnTypes(#\"Added custom\", {{\"NullCount\", Int64.Type}}),\r\n  #\"Filtered rows\" = Table.SelectRows(#\"Changed column type\", each [NullCount] = 0),\r\n  Custom = Source,\r\n  #\"Replaced value 1\" = Table.ReplaceValue(Custom, \"\", \"Not provided\", Replacer.ReplaceValue, {\"countryCode\"}),\r\n  #\"Replaced value 2\" = Table.ReplaceValue(#\"Replaced value 1\", \"\", \"Not provided\", Replacer.ReplaceValue, {\"clusterCode\", \"requirements\"}),\r\n  #\"Replaced value 3\" = Table.ReplaceValue(#\"Replaced value 2\", \"\", \"Not provided\", Replacer.ReplaceValue, {\"percentFunded\", \"funding\"}),\r\n  #\"Removed top rows\" = Table.Skip(#\"Replaced value 3\", 1)\r\nin\r\n  #\"Removed top rows\";\r\n",
 					"documentLocale": "en-us"
 				}
 			},
@@ -2604,6 +2871,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_KenFoodPrices_target",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
 						}
 					],
 					"sinks": [
@@ -2618,6 +2892,9 @@
 					"transformations": [
 						{
 							"name": "split1"
+						},
+						{
+							"name": "join1"
 						}
 					],
 					"scriptLines": [
@@ -2639,8 +2916,32 @@
 						"     validateSchema: false,",
 						"     inferDriftedColumnTypes: true,",
 						"     ignoreNoFilesFound: false) ~> source1",
-						"source1 split(contains(array(toString(columns())), isNull(#item)),",
+						"source(output(",
+						"          date as string,",
+						"          admin1 as string,",
+						"          admin2 as string,",
+						"          market as string,",
+						"          latitude as string,",
+						"          longitude as string,",
+						"          category as string,",
+						"          commodity as string,",
+						"          unit as string,",
+						"          priceflag as string,",
+						"          pricetype as string,",
+						"          currency as string,",
+						"          price as string,",
+						"          usdprice as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source2",
+						"join1 split(contains(array(toString(columns())), isNull(#item)),",
 						"     disjoint: false) ~> split1@(Nulls, good)",
+						"source1, source2 join(countryCode == admin1,",
+						"     joinType:'outer',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
 						"split1@good sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -2665,7 +2966,244 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_KenftsFundingGlobalCluster_target')]",
+				"[concat(variables('factoryId'), '/datasets/ds_KenFoodPrices_target')]",
 				"[concat(variables('factoryId'), '/datasets/KenftsFundingGlobalCluster_dfsink')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BinaryDataSourceStore')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Connection to your data source store. ",
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Container": {
+						"type": "string"
+					},
+					"Directory": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@dataset().Directory",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().Container",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BinaryDataDestinationStore')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Connection to your data destination store.  ",
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Container": {
+						"type": "string"
+					},
+					"Directory": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@dataset().Directory",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().Container",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CopyNewFilesByLastModifiedDate')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Copy new and changed files only by using LastModifiedDate",
+				"activities": [
+					{
+						"name": "CopyNewFiles",
+						"description": "Copy new and changed files only by using LastModifiedDate",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "BinarySource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"modifiedDatetimeStart": {
+										"value": "@{pipeline().parameters.LastModified_From}",
+										"type": "Expression"
+									},
+									"modifiedDatetimeEnd": {
+										"value": "@{pipeline().parameters.LastModified_To}",
+										"type": "Expression"
+									},
+									"wildcardFileName": {
+										"value": "*",
+										"type": "Expression"
+									}
+								},
+								"formatSettings": {
+									"type": "BinaryReadSettings"
+								}
+							},
+							"sink": {
+								"type": "BinarySink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "BinaryDataSourceStore",
+								"type": "DatasetReference",
+								"parameters": {
+									"Container": {
+										"value": "@pipeline().parameters.FolderPath_Source",
+										"type": "Expression"
+									},
+									"Directory": {
+										"value": "@pipeline().parameters.Directory_Source",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "BinaryDataDestinationStore",
+								"type": "DatasetReference",
+								"parameters": {
+									"Container": {
+										"value": "@pipeline().parameters.FolderPath_Destination",
+										"type": "Expression"
+									},
+									"Directory": {
+										"value": "@pipeline().parameters.Directory_Destination",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"FolderPath_Source": {
+						"type": "String",
+						"defaultValue": "datakind"
+					},
+					"Directory_Source": {
+						"type": "String",
+						"defaultValue": "raw"
+					},
+					"FolderPath_Destination": {
+						"type": "String",
+						"defaultValue": "datakind"
+					},
+					"Directory_Destination": {
+						"type": "String",
+						"defaultValue": "target"
+					},
+					"LastModified_From": {
+						"type": "String",
+						"defaultValue": "2022-02-01T00:00:00Z"
+					},
+					"LastModified_To": {
+						"type": "String",
+						"defaultValue": "2022-03-01T00:00:00Z"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/BinaryDataSourceStore')]",
+				"[concat(variables('factoryId'), '/datasets/BinaryDataDestinationStore')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger_every_15_minutes')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "CopyNewFilesByLastModifiedDate",
+						"type": "PipelineReference"
+					},
+					"parameters": {
+						"FolderPath_Source": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_FolderPath_Source')]",
+						"Directory_Source": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_Directory_Source')]",
+						"FolderPath_Destination": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_FolderPath_Destination')]",
+						"Directory_Destination": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_Directory_Destination')]",
+						"LastModified_From": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_LastModified_From')]",
+						"LastModified_To": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_LastModified_To')]"
+					}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Minute",
+					"interval": 15,
+					"startTime": "2023-01-09T14:03:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": []
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/CopyNewFilesByLastModifiedDate')]"
 			]
 		}
 	]
