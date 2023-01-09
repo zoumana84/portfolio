@@ -3160,7 +3160,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"folderPath": "target/xlsxtocsv",
+						"folderPath": "target",
 						"container": "datakind"
 					},
 					"columnDelimiter": ",",
@@ -3263,80 +3263,6 @@
 							"enableStaging": false,
 							"translator": {
 								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": " Region ",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": " Region ",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": " District",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": " District",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "Health Facility name",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Health Facility name",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "Type:",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Type:",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "Latiitude",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Latiitude",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "Longititude",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Longititude",
-											"type": "String",
-											"physicalType": "String"
-										}
-									}
-								],
 								"typeConversion": true,
 								"typeConversionSettings": {
 									"allowDataTruncation": true,
