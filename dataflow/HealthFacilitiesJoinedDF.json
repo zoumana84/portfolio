@@ -1,5 +1,5 @@
 {
-	"name": "SomHealthFacilitiesDF",
+	"name": "HealthFacilitiesJoinedDF",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -10,6 +10,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_KenHealthFacilitiesTarget",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
 				}
 			],
 			"sinks": [
@@ -24,15 +31,63 @@
 			"transformations": [
 				{
 					"name": "split1"
+				},
+				{
+					"name": "split2"
+				},
+				{
+					"name": "join1"
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          { Region } as string,",
+				"          { District} as string,",
+				"          {Health Facility name} as string,",
+				"          {Type:} as string,",
+				"          Latiitude as double,",
+				"          Longititude as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          Code as short,",
+				"          Name as string,",
+				"          Registration_number as string,",
+				"          {Keph level} as string,",
+				"          {Facility type} as string,",
+				"          Owner as string,",
+				"          {Regulatory body} as string,",
+				"          Beds as short,",
+				"          Cots as short,",
+				"          County as string,",
+				"          Constituency as string,",
+				"          {Sub county} as string,",
+				"          Ward as string,",
+				"          {Operation status} as string,",
+				"          Open_whole_day as boolean,",
+				"          Open_public_holidays as boolean,",
+				"          Open_weekends as boolean,",
+				"          Open_late_night as boolean,",
+				"          Service_names as string,",
+				"          Approved as boolean,",
+				"          {Public visible} as boolean,",
+				"          Closed as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source2",
 				"source1 split(contains(array(toString(columns())), isNull(#item)),",
 				"     disjoint: false) ~> split1@(Nulls, Good)",
-				"split1@Good sink(allowSchemaDrift: true,",
+				"source2 split(contains(array(toString(columns())), isNull(#item)),",
+				"     disjoint: false) ~> split2@(Nulls2, Good2)",
+				"split1@Good, split2@Good2 join({Health Facility name} == Name,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     filePattern:'SomHealthFacilitiesDFTarget',",
 				"     skipDuplicateMapInputs: true,",

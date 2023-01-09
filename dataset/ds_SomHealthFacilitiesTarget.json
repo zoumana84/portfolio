@@ -19,6 +19,31 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": " Region ",
+				"type": "String"
+			},
+			{
+				"name": " District",
+				"type": "String"
+			},
+			{
+				"name": "Health Facility name",
+				"type": "String"
+			},
+			{
+				"name": "Type:",
+				"type": "String"
+			},
+			{
+				"name": "Latiitude",
+				"type": "String"
+			},
+			{
+				"name": "Longititude",
+				"type": "String"
+			}
+		]
 	}
 }
