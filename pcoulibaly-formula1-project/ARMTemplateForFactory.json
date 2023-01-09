@@ -1033,7 +1033,6 @@
 								"parameters": {},
 								"datasetParameters": {
 									"source1": {},
-									"source2": {},
 									"sink2": {}
 								}
 							},
@@ -2226,7 +2225,56 @@
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
-				"schema": []
+				"schema": [
+					{
+						"name": "countryCode",
+						"type": "String"
+					},
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "code",
+						"type": "String"
+					},
+					{
+						"name": "typeId",
+						"type": "String"
+					},
+					{
+						"name": "typeName",
+						"type": "String"
+					},
+					{
+						"name": "startDate",
+						"type": "String"
+					},
+					{
+						"name": "endDate",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "requirements",
+						"type": "String"
+					},
+					{
+						"name": "funding",
+						"type": "String"
+					},
+					{
+						"name": "percentFunded",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_humData')]"
@@ -2527,6 +2575,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "tobecleaned"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
@@ -2594,6 +2645,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "tobecleaned"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
@@ -2677,6 +2731,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "tobecleaned"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
@@ -2774,6 +2831,9 @@
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"folder": {
+					"name": "tobecleaned"
+				},
 				"type": "MappingDataFlow",
 				"typeProperties": {
 					"sources": [
@@ -2783,13 +2843,6 @@
 								"type": "DatasetReference"
 							},
 							"name": "source1"
-						},
-						{
-							"dataset": {
-								"referenceName": "ds_KenFoodPrices_target",
-								"type": "DatasetReference"
-							},
-							"name": "source2"
 						}
 					],
 					"sinks": [
@@ -2804,9 +2857,6 @@
 					"transformations": [
 						{
 							"name": "split1"
-						},
-						{
-							"name": "join1"
 						}
 					],
 					"scriptLines": [
@@ -2828,32 +2878,8 @@
 						"     validateSchema: false,",
 						"     inferDriftedColumnTypes: true,",
 						"     ignoreNoFilesFound: false) ~> source1",
-						"source(output(",
-						"          date as string,",
-						"          admin1 as string,",
-						"          admin2 as string,",
-						"          market as string,",
-						"          latitude as string,",
-						"          longitude as string,",
-						"          category as string,",
-						"          commodity as string,",
-						"          unit as string,",
-						"          priceflag as string,",
-						"          pricetype as string,",
-						"          currency as string,",
-						"          price as string,",
-						"          usdprice as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> source2",
-						"join1 split(contains(array(toString(columns())), isNull(#item)),",
+						"source1 split(contains(array(toString(columns())), isNull(#item)),",
 						"     disjoint: false) ~> split1@(Nulls, good)",
-						"source1, source2 join(countryCode == admin1,",
-						"     joinType:'outer',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join1",
 						"split1@good sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -2878,7 +2904,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_KenftsFundingGlobalCluster_target')]",
-				"[concat(variables('factoryId'), '/datasets/ds_KenFoodPrices_target')]",
 				"[concat(variables('factoryId'), '/datasets/KenftsFundingGlobalCluster_dfsink')]"
 			]
 		},
@@ -3372,6 +3397,9 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
+				"folder": {
+					"name": "Kept"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
@@ -3473,6 +3501,9 @@
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Kept"
 				},
 				"annotations": []
 			},
@@ -3682,12 +3713,258 @@
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
 				},
+				"folder": {
+					"name": "Kept"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/pl_SomHealthFacilities')]",
 				"[concat(variables('factoryId'), '/pipelines/pl_KenHealthFacilities')]",
 				"[concat(variables('factoryId'), '/dataflows/HealthFacilitiesJoinedDF')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_KenftsReqFundingTarget",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_KenftsReqFunding_dfTarget",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          countryCode as string,",
+						"          id as string,",
+						"          name as string,",
+						"          code as string,",
+						"          startDate as string,",
+						"          endDate as string,",
+						"          year as string,",
+						"          clusterCode as string,",
+						"          cluster as string,",
+						"          requirements as string,",
+						"          funding as string,",
+						"          percentFunded as string",
+						"     ),",
+						"     filePattern:'KenftsReqFunding_dfTarget',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_KenftsReqFundingTarget')]",
+				"[concat(variables('factoryId'), '/datasets/ds_KenftsReqFunding_dfTarget')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_KenftsReqFunding')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_KenftsReqFundingSrc",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_KenftsReqFundingTarget",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Kept"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_KenftsReqFundingSrc')]",
+				"[concat(variables('factoryId'), '/datasets/ds_KenftsReqFundingTarget')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenftsReqFundingTarget')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "KenftsReqFunding",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenftsReqFunding_dfTarget')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "countryCode",
+						"type": "String"
+					},
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "code",
+						"type": "String"
+					},
+					{
+						"name": "startDate",
+						"type": "String"
+					},
+					{
+						"name": "endDate",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "clusterCode",
+						"type": "String"
+					},
+					{
+						"name": "cluster",
+						"type": "String"
+					},
+					{
+						"name": "requirements",
+						"type": "String"
+					},
+					{
+						"name": "funding",
+						"type": "String"
+					},
+					{
+						"name": "percentFunded",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
 			]
 		}
 	]
