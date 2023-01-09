@@ -1,5 +1,5 @@
 {
-	"name": "ds_SomHealthFacilitiesTarget",
+	"name": "ds_SomHealthFacilities_dftarget",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_injectionsa",
@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": "target/xlsxtocsv",
+				"folderPath": "target",
 				"container": "datakind"
 			},
 			"columnDelimiter": ",",
