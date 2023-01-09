@@ -1,5 +1,5 @@
 {
-	"name": "pl_SomHealthFacilities",
+	"name": "pl_KenftsReqFunding",
 	"properties": {
 		"activities": [
 			{
@@ -16,10 +16,13 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "ExcelSource",
+						"type": "DelimitedTextSource",
 						"storeSettings": {
 							"type": "HttpReadSettings",
 							"requestMethod": "GET"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
 						}
 					},
 					"sink": {
@@ -45,13 +48,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_SomHealthFacilitiesSrc",
+						"referenceName": "ds_KenftsReqFundingSrc",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_SomHealthFacilitiesTarget",
+						"referenceName": "ds_KenftsReqFundingTarget",
 						"type": "DatasetReference"
 					}
 				]

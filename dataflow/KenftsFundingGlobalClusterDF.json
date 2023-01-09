@@ -1,6 +1,9 @@
 {
 	"name": "KenftsFundingGlobalClusterDF",
 	"properties": {
+		"folder": {
+			"name": "tobecleaned"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
@@ -10,13 +13,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "source1"
-				},
-				{
-					"dataset": {
-						"referenceName": "ds_KenFoodPrices_target",
-						"type": "DatasetReference"
-					},
-					"name": "source2"
 				}
 			],
 			"sinks": [
@@ -31,9 +27,6 @@
 			"transformations": [
 				{
 					"name": "split1"
-				},
-				{
-					"name": "join1"
 				}
 			],
 			"scriptLines": [
@@ -55,32 +48,8 @@
 				"     validateSchema: false,",
 				"     inferDriftedColumnTypes: true,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source(output(",
-				"          date as string,",
-				"          admin1 as string,",
-				"          admin2 as string,",
-				"          market as string,",
-				"          latitude as string,",
-				"          longitude as string,",
-				"          category as string,",
-				"          commodity as string,",
-				"          unit as string,",
-				"          priceflag as string,",
-				"          pricetype as string,",
-				"          currency as string,",
-				"          price as string,",
-				"          usdprice as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source2",
-				"join1 split(contains(array(toString(columns())), isNull(#item)),",
+				"source1 split(contains(array(toString(columns())), isNull(#item)),",
 				"     disjoint: false) ~> split1@(Nulls, good)",
-				"source1, source2 join(countryCode == admin1,",
-				"     joinType:'outer',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1",
 				"split1@good sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",

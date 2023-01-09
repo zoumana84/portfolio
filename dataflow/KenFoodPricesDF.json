@@ -1,6 +1,9 @@
 {
 	"name": "KenFoodPricesDF",
 	"properties": {
+		"folder": {
+			"name": "tobecleaned"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
