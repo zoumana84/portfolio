@@ -19,10 +19,12 @@
 						"type": "DelimitedTextSource",
 						"storeSettings": {
 							"type": "HttpReadSettings",
-							"requestMethod": "GET"
+							"requestMethod": "GET",
+							"requestTimeout": ""
 						},
 						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
+							"type": "DelimitedTextReadSettings",
+							"skipLineCount": 1
 						}
 					},
 					"sink": {
@@ -39,6 +41,140 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "KEN",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "KEN",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "1137",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "1137",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Kenya Drought Response Plan 2023",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Kenya Drought Response Plan 2023",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "FKEN23",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FKEN23",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "2023-01-01",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "2023-01-01",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "2023-12-31",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "2023-12-31",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "2023",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "2023",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Prop_7",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Prop_7",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Not specified",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Not specified",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Prop_9",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Prop_9",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Prop_10",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Prop_10",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
