@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "KenftsReqFundingDF",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -23,8 +23,23 @@
 			],
 			"transformations": [],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          countryCode as string,",
+				"          id as string,",
+				"          name as string,",
+				"          code as string,",
+				"          typeId as string,",
+				"          typeName as string,",
+				"          startDate as string,",
+				"          endDate as string,",
+				"          year as string,",
+				"          requirements as string,",
+				"          funding as string,",
+				"          percentFunded as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
 				"     ignoreNoFilesFound: false) ~> source1",
 				"source1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
