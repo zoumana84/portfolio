@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "KenftsReqFunding_pqtarget",
+				"fileName": "part-00000-317f8a81-5415-4d1c-b82b-4b1de1e4a759-c000.csv",
 				"folderPath": "target",
 				"container": "datakind"
 			},
@@ -19,6 +19,55 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "countryCode",
+				"type": "String"
+			},
+			{
+				"name": "id",
+				"type": "String"
+			},
+			{
+				"name": "name",
+				"type": "String"
+			},
+			{
+				"name": "code",
+				"type": "String"
+			},
+			{
+				"name": "typeId",
+				"type": "String"
+			},
+			{
+				"name": "typeName",
+				"type": "String"
+			},
+			{
+				"name": "startDate",
+				"type": "String"
+			},
+			{
+				"name": "endDate",
+				"type": "String"
+			},
+			{
+				"name": "year",
+				"type": "String"
+			},
+			{
+				"name": "requirements",
+				"type": "String"
+			},
+			{
+				"name": "funding",
+				"type": "String"
+			},
+			{
+				"name": "percentFunded",
+				"type": "String"
+			}
+		]
 	}
 }

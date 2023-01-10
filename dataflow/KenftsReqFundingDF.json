@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "ds_KenftsReqFundingTarget",
+						"referenceName": "KenftsReqFundingPQ",
 						"type": "DatasetReference"
 					},
 					"name": "source1"
@@ -21,27 +21,33 @@
 					"name": "sink1"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "split1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          countryCode as string,",
-				"          id as string,",
+				"          id as short,",
 				"          name as string,",
 				"          code as string,",
-				"          typeId as string,",
+				"          typeId as short,",
 				"          typeName as string,",
-				"          startDate as string,",
-				"          endDate as string,",
-				"          year as string,",
-				"          requirements as string,",
-				"          funding as string,",
-				"          percentFunded as string",
+				"          startDate as date,",
+				"          endDate as date,",
+				"          year as short,",
+				"          requirements as integer,",
+				"          funding as integer,",
+				"          percentFunded as short",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     inferDriftedColumnTypes: true,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
+				"source1 split(contains(array(toString(columns())), isNull(#item)),",
+				"     disjoint: false) ~> split1@(Null, Good)",
+				"split1@Good sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          countryCode as string,",
