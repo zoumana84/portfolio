@@ -4063,6 +4063,43 @@
 								}
 							]
 						}
+					},
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Power Query1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "KenftsReqFundingDF",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -4078,6 +4115,7 @@
 				"[concat(variables('factoryId'), '/datasets/ds_KenftsReqFundingSrc')]",
 				"[concat(variables('factoryId'), '/datasets/ds_KenftsReqFundingTarget')]",
 				"[concat(variables('factoryId'), '/dataflows/KenftsReqFunding')]",
+				"[concat(variables('factoryId'), '/dataflows/KenftsReqFundingDF')]",
 				"[concat(variables('factoryId'), '/datasets/KenftsReqFundingPQ')]"
 			]
 		},
