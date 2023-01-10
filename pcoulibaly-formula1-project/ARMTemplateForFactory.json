@@ -81,6 +81,222 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/CopyNewFilesByLastModifiedDate')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Copy new and changed files only by using LastModifiedDate",
+				"activities": [
+					{
+						"name": "CopyNewFiles",
+						"description": "Copy new and changed files only by using LastModifiedDate",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "BinarySource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"modifiedDatetimeStart": {
+										"value": "@{pipeline().parameters.LastModified_From}",
+										"type": "Expression"
+									},
+									"modifiedDatetimeEnd": {
+										"value": "@{pipeline().parameters.LastModified_To}",
+										"type": "Expression"
+									},
+									"wildcardFileName": {
+										"value": "*",
+										"type": "Expression"
+									}
+								},
+								"formatSettings": {
+									"type": "BinaryReadSettings"
+								}
+							},
+							"sink": {
+								"type": "BinarySink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "BinaryDataSourceStore",
+								"type": "DatasetReference",
+								"parameters": {
+									"Container": {
+										"value": "@pipeline().parameters.FolderPath_Source",
+										"type": "Expression"
+									},
+									"Directory": {
+										"value": "@pipeline().parameters.Directory_Source",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "BinaryDataDestinationStore",
+								"type": "DatasetReference",
+								"parameters": {
+									"Container": {
+										"value": "@pipeline().parameters.FolderPath_Destination",
+										"type": "Expression"
+									},
+									"Directory": {
+										"value": "@pipeline().parameters.Directory_Destination",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"FolderPath_Source": {
+						"type": "String",
+						"defaultValue": "datakind"
+					},
+					"Directory_Source": {
+						"type": "String",
+						"defaultValue": "raw"
+					},
+					"FolderPath_Destination": {
+						"type": "String",
+						"defaultValue": "datakind"
+					},
+					"Directory_Destination": {
+						"type": "String",
+						"defaultValue": "target"
+					},
+					"LastModified_From": {
+						"type": "String",
+						"defaultValue": "2022-02-01T00:00:00Z"
+					},
+					"LastModified_To": {
+						"type": "String",
+						"defaultValue": "2022-03-01T00:00:00Z"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/BinaryDataSourceStore')]",
+				"[concat(variables('factoryId'), '/datasets/BinaryDataDestinationStore')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Main HealthFacilities Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute SomHealthFacilities",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pl_SomHealthFacilities",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute KenHealthFacilities",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "pl_KenHealthFacilities",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Execute SomHealthFacilities",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Execute KenHealthFacilities",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "HealthFacilitiesJoinedDF",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"source2": {},
+									"sink2": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Kept"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_SomHealthFacilities')]",
+				"[concat(variables('factoryId'), '/pipelines/pl_KenHealthFacilities')]",
+				"[concat(variables('factoryId'), '/dataflows/HealthFacilitiesJoinedDF')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -508,6 +724,176 @@
 							"enableStaging": false,
 							"translator": {
 								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "#date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#date",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#adm1+name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#adm1+name",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#adm2+name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#adm2+name",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#loc+market+name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#loc+market+name",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#geo+lat",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#geo+lat",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#geo+lon",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#geo+lon",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#item+type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#item+type",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#item+name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#item+name",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#item+unit",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#item+unit",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#item+price+flag",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#item+price+flag",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#item+price+type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#item+price+type",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#currency",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#currency",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#value",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#value",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#value+usd",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#value+usd",
+											"type": "String",
+											"physicalType": "String"
+										}
+									}
+								],
 								"typeConversion": true,
 								"typeConversionSettings": {
 									"allowDataTruncation": true,
@@ -641,6 +1027,83 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pl_KenHealthFacilities')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_KenHealthFacilitiesExcel",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_KenHealthFacilitiesTarget",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Kept"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_KenHealthFacilitiesExcel')]",
+				"[concat(variables('factoryId'), '/datasets/ds_KenHealthFacilitiesTarget')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pl_KenftsFundingClusterSrc')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -753,6 +1216,400 @@
 				"[concat(variables('factoryId'), '/datasets/ds_KenftsFundingClusterSrc')]",
 				"[concat(variables('factoryId'), '/datasets/ds_KenftsFundingCluster_target')]",
 				"[concat(variables('factoryId'), '/dataflows/KenftsFundingClusterDF')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_KenftsReqFunding')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "countryCode",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "countryCode",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "name",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "code",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "code",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "typeId",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "typeId",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "typeName",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "typeName",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "startDate",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "startDate",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "endDate",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "endDate",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "year",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "year",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "requirements",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "requirements",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "funding",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "funding",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "percentFunded",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "percentFunded",
+											"type": "String",
+											"physicalType": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_KenftsReqFundingSrc",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_KenftsReqFundingTarget",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Power Query1",
+						"type": "ExecuteWranglingDataflow",
+						"dependsOn": [
+							{
+								"activity": "Copy data1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "KenftsReqFunding",
+								"type": "DataFlowReference",
+								"datasetParameters": {
+									"ds_KenftsReqFundingTarget": {},
+									"UserQueryKenftsReqFundingPQ": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"queries": [
+								{
+									"queryName": "UserQuery",
+									"dataflowSinks": [
+										{
+											"name": "UserQueryKenftsReqFundingPQ",
+											"dataset": {
+												"referenceName": "KenftsReqFundingPQ",
+												"type": "DatasetReference",
+												"parameters": {}
+											},
+											"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tcountryCode as string,\n\t\tid as string,\n\t\tname as string,\n\t\tcode as string,\n\t\ttypeId as string,\n\t\ttypeName as string,\n\t\tstartDate as string,\n\t\tendDate as string,\n\t\tyear as string,\n\t\trequirements as string,\n\t\tfunding as string,\n\t\tpercentFunded as string\n\t),\n\tpartitionFileNames:['KenftsReqFundingPQ'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> UserQueryKenftsReqFundingPQ"
+										}
+									]
+								}
+							]
+						}
+					},
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Power Query1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "KenftsReqFundingDF",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Kept"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_KenftsReqFundingSrc')]",
+				"[concat(variables('factoryId'), '/datasets/ds_KenftsReqFundingTarget')]",
+				"[concat(variables('factoryId'), '/dataflows/KenftsReqFunding')]",
+				"[concat(variables('factoryId'), '/dataflows/KenftsReqFundingDF')]",
+				"[concat(variables('factoryId'), '/datasets/KenftsReqFundingPQ')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_SomHealthFacilities')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_SomHealthFacilitiesSrc",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_SomHealthFacilitiesTarget",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Kept"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_SomHealthFacilitiesSrc')]",
+				"[concat(variables('factoryId'), '/datasets/ds_SomHealthFacilitiesTarget')]"
 			]
 		},
 		{
@@ -1176,6 +2033,82 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/BinaryDataDestinationStore')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Connection to your data destination store.  ",
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Container": {
+						"type": "string"
+					},
+					"Directory": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@dataset().Directory",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().Container",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BinaryDataSourceStore')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Connection to your data source store. ",
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Container": {
+						"type": "string"
+					},
+					"Directory": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@dataset().Directory",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().Container",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/KenftsFundingGlobalCluster_dfsink')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1249,6 +2182,84 @@
 					},
 					{
 						"name": "usdprice",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/KenftsReqFundingPQ')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "KenftsReqFundingPQ",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "countryCode",
+						"type": "String"
+					},
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "code",
+						"type": "String"
+					},
+					{
+						"name": "typeId",
+						"type": "String"
+					},
+					{
+						"name": "typeName",
+						"type": "String"
+					},
+					{
+						"name": "startDate",
+						"type": "String"
+					},
+					{
+						"name": "endDate",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "requirements",
+						"type": "String"
+					},
+					{
+						"name": "funding",
+						"type": "String"
+					},
+					{
+						"name": "percentFunded",
 						"type": "String"
 					}
 				]
@@ -1735,6 +2746,124 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_humData')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenHealthFacilitiesTarget')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "KenHealthFacilities",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Code",
+						"type": "String"
+					},
+					{
+						"name": "Name",
+						"type": "String"
+					},
+					{
+						"name": "Registration_number",
+						"type": "String"
+					},
+					{
+						"name": "Keph level",
+						"type": "String"
+					},
+					{
+						"name": "Facility type",
+						"type": "String"
+					},
+					{
+						"name": "Owner",
+						"type": "String"
+					},
+					{
+						"name": "Regulatory body",
+						"type": "String"
+					},
+					{
+						"name": "Beds",
+						"type": "String"
+					},
+					{
+						"name": "Cots",
+						"type": "String"
+					},
+					{
+						"name": "County",
+						"type": "String"
+					},
+					{
+						"name": "Constituency",
+						"type": "String"
+					},
+					{
+						"name": "Sub county",
+						"type": "String"
+					},
+					{
+						"name": "Ward",
+						"type": "String"
+					},
+					{
+						"name": "Operation status",
+						"type": "String"
+					},
+					{
+						"name": "Open_whole_day",
+						"type": "String"
+					},
+					{
+						"name": "Open_public_holidays",
+						"type": "String"
+					},
+					{
+						"name": "Open_weekends",
+						"type": "String"
+					},
+					{
+						"name": "Open_late_night",
+						"type": "String"
+					},
+					{
+						"name": "Service_names",
+						"type": "String"
+					},
+					{
+						"name": "Approved",
+						"type": "String"
+					},
+					{
+						"name": "Public visible",
+						"type": "String"
+					},
+					{
+						"name": "Closed",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
 			]
 		},
 		{
@@ -2281,6 +3410,271 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenftsReqFundingTarget')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "KenftsReqFunding",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "countryCode",
+						"type": "String"
+					},
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "code",
+						"type": "String"
+					},
+					{
+						"name": "typeId",
+						"type": "String"
+					},
+					{
+						"name": "typeName",
+						"type": "String"
+					},
+					{
+						"name": "startDate",
+						"type": "String"
+					},
+					{
+						"name": "endDate",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "requirements",
+						"type": "String"
+					},
+					{
+						"name": "funding",
+						"type": "String"
+					},
+					{
+						"name": "percentFunded",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenftsReqFunding_dfTarget')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "countryCode",
+						"type": "String"
+					},
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "code",
+						"type": "String"
+					},
+					{
+						"name": "startDate",
+						"type": "String"
+					},
+					{
+						"name": "endDate",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "clusterCode",
+						"type": "String"
+					},
+					{
+						"name": "cluster",
+						"type": "String"
+					},
+					{
+						"name": "requirements",
+						"type": "String"
+					},
+					{
+						"name": "funding",
+						"type": "String"
+					},
+					{
+						"name": "percentFunded",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_SomHealthFacilitiesSrc')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_humData",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Somalia"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "HFs Data",
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "9fd710d4-ab87-43c9-b6da-39847af345b1/resource/3bc1cf5a-a46d-47a5-8f7f-93789f5db5b9/download/health-facilities.xlsx"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_humData')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_SomHealthFacilitiesTarget')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "SomHealthFacilities",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": " Region ",
+						"type": "String"
+					},
+					{
+						"name": " District",
+						"type": "String"
+					},
+					{
+						"name": "Health Facility name",
+						"type": "String"
+					},
+					{
+						"name": "Type:",
+						"type": "String"
+					},
+					{
+						"name": "Latiitude",
+						"type": "String"
+					},
+					{
+						"name": "Longititude",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_SomHealthFacilities_dftarget')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_formula1_raw')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2536,6 +3930,44 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/trigger_every_15_minutes')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "CopyNewFilesByLastModifiedDate",
+						"type": "PipelineReference"
+					},
+					"parameters": {
+						"FolderPath_Source": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_FolderPath_Source')]",
+						"Directory_Source": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_Directory_Source')]",
+						"FolderPath_Destination": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_FolderPath_Destination')]",
+						"Directory_Destination": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_Directory_Destination')]",
+						"LastModified_From": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_LastModified_From')]",
+						"LastModified_To": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_LastModified_To')]"
+					}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Minute",
+					"interval": 15,
+					"startTime": "2023-01-09T14:03:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": []
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/CopyNewFilesByLastModifiedDate')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/integrationRuntime1')]",
 			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
@@ -2544,6 +3976,114 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/HealthFacilitiesJoinedDF')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_SomHealthFacilitiesTarget",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_KenHealthFacilitiesTarget",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_SomHealthFacilities_dftarget",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "split1"
+						},
+						{
+							"name": "split2"
+						},
+						{
+							"name": "join1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          { Region } as string,",
+						"          { District} as string,",
+						"          {Health Facility name} as string,",
+						"          {Type:} as string,",
+						"          Latiitude as double,",
+						"          Longititude as double",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source(output(",
+						"          Code as short,",
+						"          Name as string,",
+						"          Registration_number as string,",
+						"          {Keph level} as string,",
+						"          {Facility type} as string,",
+						"          Owner as string,",
+						"          {Regulatory body} as string,",
+						"          Beds as short,",
+						"          Cots as short,",
+						"          County as string,",
+						"          Constituency as string,",
+						"          {Sub county} as string,",
+						"          Ward as string,",
+						"          {Operation status} as string,",
+						"          Open_whole_day as boolean,",
+						"          Open_public_holidays as boolean,",
+						"          Open_weekends as boolean,",
+						"          Open_late_night as boolean,",
+						"          Service_names as string,",
+						"          Approved as boolean,",
+						"          {Public visible} as boolean,",
+						"          Closed as boolean",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> source2",
+						"source1 split(contains(array(toString(columns())), isNull(#item)),",
+						"     disjoint: false) ~> split1@(Nulls, Good)",
+						"source2 split(contains(array(toString(columns())), isNull(#item)),",
+						"     disjoint: false) ~> split2@(Nulls2, Good2)",
+						"split1@Good, split2@Good2 join({Health Facility name} == Name,",
+						"     joinType:'outer',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['HealthFacilitiesJoined'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink2"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_SomHealthFacilitiesTarget')]",
+				"[concat(variables('factoryId'), '/datasets/ds_KenHealthFacilitiesTarget')]",
+				"[concat(variables('factoryId'), '/datasets/ds_SomHealthFacilities_dftarget')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/KenFoodPrices')]",
@@ -2908,820 +4448,28 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/BinaryDataSourceStore')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Connection to your data source store. ",
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"Container": {
-						"type": "string"
-					},
-					"Directory": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": {
-							"value": "@dataset().Directory",
-							"type": "Expression"
-						},
-						"container": {
-							"value": "@dataset().Container",
-							"type": "Expression"
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/BinaryDataDestinationStore')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Connection to your data destination store.  ",
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"Container": {
-						"type": "string"
-					},
-					"Directory": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": {
-							"value": "@dataset().Directory",
-							"type": "Expression"
-						},
-						"container": {
-							"value": "@dataset().Container",
-							"type": "Expression"
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CopyNewFilesByLastModifiedDate')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Copy new and changed files only by using LastModifiedDate",
-				"activities": [
-					{
-						"name": "CopyNewFiles",
-						"description": "Copy new and changed files only by using LastModifiedDate",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "BinarySource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"modifiedDatetimeStart": {
-										"value": "@{pipeline().parameters.LastModified_From}",
-										"type": "Expression"
-									},
-									"modifiedDatetimeEnd": {
-										"value": "@{pipeline().parameters.LastModified_To}",
-										"type": "Expression"
-									},
-									"wildcardFileName": {
-										"value": "*",
-										"type": "Expression"
-									}
-								},
-								"formatSettings": {
-									"type": "BinaryReadSettings"
-								}
-							},
-							"sink": {
-								"type": "BinarySink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "BinaryDataSourceStore",
-								"type": "DatasetReference",
-								"parameters": {
-									"Container": {
-										"value": "@pipeline().parameters.FolderPath_Source",
-										"type": "Expression"
-									},
-									"Directory": {
-										"value": "@pipeline().parameters.Directory_Source",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "BinaryDataDestinationStore",
-								"type": "DatasetReference",
-								"parameters": {
-									"Container": {
-										"value": "@pipeline().parameters.FolderPath_Destination",
-										"type": "Expression"
-									},
-									"Directory": {
-										"value": "@pipeline().parameters.Directory_Destination",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"FolderPath_Source": {
-						"type": "String",
-						"defaultValue": "datakind"
-					},
-					"Directory_Source": {
-						"type": "String",
-						"defaultValue": "raw"
-					},
-					"FolderPath_Destination": {
-						"type": "String",
-						"defaultValue": "datakind"
-					},
-					"Directory_Destination": {
-						"type": "String",
-						"defaultValue": "target"
-					},
-					"LastModified_From": {
-						"type": "String",
-						"defaultValue": "2022-02-01T00:00:00Z"
-					},
-					"LastModified_To": {
-						"type": "String",
-						"defaultValue": "2022-03-01T00:00:00Z"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/BinaryDataSourceStore')]",
-				"[concat(variables('factoryId'), '/datasets/BinaryDataDestinationStore')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/trigger_every_15_minutes')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipeline": {
-					"pipelineReference": {
-						"referenceName": "CopyNewFilesByLastModifiedDate",
-						"type": "PipelineReference"
-					},
-					"parameters": {
-						"FolderPath_Source": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_FolderPath_Source')]",
-						"Directory_Source": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_Directory_Source')]",
-						"FolderPath_Destination": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_FolderPath_Destination')]",
-						"Directory_Destination": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_Directory_Destination')]",
-						"LastModified_From": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_LastModified_From')]",
-						"LastModified_To": "[parameters('trigger_every_15_minutes_properties_pipeline_parameters_LastModified_To')]"
-					}
-				},
-				"type": "TumblingWindowTrigger",
-				"typeProperties": {
-					"frequency": "Minute",
-					"interval": 15,
-					"startTime": "2023-01-09T14:03:00Z",
-					"delay": "00:00:00",
-					"maxConcurrency": 50,
-					"retryPolicy": {
-						"intervalInSeconds": 30
-					},
-					"dependsOn": []
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/CopyNewFilesByLastModifiedDate')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_SomHealthFacilitiesSrc')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_humData",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Somalia"
-				},
-				"annotations": [],
-				"type": "Excel",
-				"typeProperties": {
-					"sheetName": "HFs Data",
-					"location": {
-						"type": "HttpServerLocation",
-						"relativeUrl": "9fd710d4-ab87-43c9-b6da-39847af345b1/resource/3bc1cf5a-a46d-47a5-8f7f-93789f5db5b9/download/health-facilities.xlsx"
-					},
-					"firstRowAsHeader": true
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_humData')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_SomHealthFacilitiesTarget')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "SomHealthFacilities",
-						"folderPath": "target",
-						"container": "datakind"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": " Region ",
-						"type": "String"
-					},
-					{
-						"name": " District",
-						"type": "String"
-					},
-					{
-						"name": "Health Facility name",
-						"type": "String"
-					},
-					{
-						"name": "Type:",
-						"type": "String"
-					},
-					{
-						"name": "Latiitude",
-						"type": "String"
-					},
-					{
-						"name": "Longititude",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/HealthFacilitiesJoinedDF')]",
+			"name": "[concat(parameters('factoryName'), '/KenftsReqFunding')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "MappingDataFlow",
+				"type": "WranglingDataFlow",
 				"typeProperties": {
 					"sources": [
 						{
+							"name": "ds_KenftsReqFundingTarget",
+							"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ds_KenftsReqFundingTarget",
 							"dataset": {
-								"referenceName": "ds_SomHealthFacilitiesTarget",
+								"referenceName": "ds_KenftsReqFundingTarget",
 								"type": "DatasetReference"
-							},
-							"name": "source1"
-						},
-						{
-							"dataset": {
-								"referenceName": "ds_KenHealthFacilitiesTarget",
-								"type": "DatasetReference"
-							},
-							"name": "source2"
+							}
 						}
 					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_SomHealthFacilities_dftarget",
-								"type": "DatasetReference"
-							},
-							"name": "sink2"
-						}
-					],
-					"transformations": [
-						{
-							"name": "split1"
-						},
-						{
-							"name": "split2"
-						},
-						{
-							"name": "join1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          { Region } as string,",
-						"          { District} as string,",
-						"          {Health Facility name} as string,",
-						"          {Type:} as string,",
-						"          Latiitude as double,",
-						"          Longititude as double",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> source1",
-						"source(output(",
-						"          Code as short,",
-						"          Name as string,",
-						"          Registration_number as string,",
-						"          {Keph level} as string,",
-						"          {Facility type} as string,",
-						"          Owner as string,",
-						"          {Regulatory body} as string,",
-						"          Beds as short,",
-						"          Cots as short,",
-						"          County as string,",
-						"          Constituency as string,",
-						"          {Sub county} as string,",
-						"          Ward as string,",
-						"          {Operation status} as string,",
-						"          Open_whole_day as boolean,",
-						"          Open_public_holidays as boolean,",
-						"          Open_weekends as boolean,",
-						"          Open_late_night as boolean,",
-						"          Service_names as string,",
-						"          Approved as boolean,",
-						"          {Public visible} as boolean,",
-						"          Closed as boolean",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> source2",
-						"source1 split(contains(array(toString(columns())), isNull(#item)),",
-						"     disjoint: false) ~> split1@(Nulls, Good)",
-						"source2 split(contains(array(toString(columns())), isNull(#item)),",
-						"     disjoint: false) ~> split2@(Nulls2, Good2)",
-						"split1@Good, split2@Good2 join({Health Facility name} == Name,",
-						"     joinType:'outer',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join1",
-						"join1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     filePattern:'SomHealthFacilitiesDFTarget',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink2"
-					]
+					"script": "section Section1;\r\nshared ds_KenftsReqFundingTarget = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/KenftsReqFunding\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"ds_KenftsReqFundingTarget\",\r\n  #\"Removed top rows\" = Table.Skip(Source, 1) in #\"Removed top rows\";\r\n",
+					"documentLocale": "en-us"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_SomHealthFacilitiesTarget')]",
-				"[concat(variables('factoryId'), '/datasets/ds_KenHealthFacilitiesTarget')]",
-				"[concat(variables('factoryId'), '/datasets/ds_SomHealthFacilities_dftarget')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pl_SomHealthFacilities')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ExcelSource",
-								"storeSettings": {
-									"type": "HttpReadSettings",
-									"requestMethod": "GET"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_SomHealthFacilitiesSrc",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_SomHealthFacilitiesTarget",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "Kept"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_SomHealthFacilitiesSrc')]",
-				"[concat(variables('factoryId'), '/datasets/ds_SomHealthFacilitiesTarget')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_SomHealthFacilities_dftarget')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": "target",
-						"container": "datakind"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pl_KenHealthFacilities')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ExcelSource",
-								"storeSettings": {
-									"type": "HttpReadSettings",
-									"requestMethod": "GET"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_KenHealthFacilitiesExcel",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_KenHealthFacilitiesTarget",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "Kept"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_KenHealthFacilitiesExcel')]",
-				"[concat(variables('factoryId'), '/datasets/ds_KenHealthFacilitiesTarget')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_KenHealthFacilitiesTarget')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "KenHealthFacilities",
-						"folderPath": "target",
-						"container": "datakind"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "Code",
-						"type": "String"
-					},
-					{
-						"name": "Name",
-						"type": "String"
-					},
-					{
-						"name": "Registration_number",
-						"type": "String"
-					},
-					{
-						"name": "Keph level",
-						"type": "String"
-					},
-					{
-						"name": "Facility type",
-						"type": "String"
-					},
-					{
-						"name": "Owner",
-						"type": "String"
-					},
-					{
-						"name": "Regulatory body",
-						"type": "String"
-					},
-					{
-						"name": "Beds",
-						"type": "String"
-					},
-					{
-						"name": "Cots",
-						"type": "String"
-					},
-					{
-						"name": "County",
-						"type": "String"
-					},
-					{
-						"name": "Constituency",
-						"type": "String"
-					},
-					{
-						"name": "Sub county",
-						"type": "String"
-					},
-					{
-						"name": "Ward",
-						"type": "String"
-					},
-					{
-						"name": "Operation status",
-						"type": "String"
-					},
-					{
-						"name": "Open_whole_day",
-						"type": "String"
-					},
-					{
-						"name": "Open_public_holidays",
-						"type": "String"
-					},
-					{
-						"name": "Open_weekends",
-						"type": "String"
-					},
-					{
-						"name": "Open_late_night",
-						"type": "String"
-					},
-					{
-						"name": "Service_names",
-						"type": "String"
-					},
-					{
-						"name": "Approved",
-						"type": "String"
-					},
-					{
-						"name": "Public visible",
-						"type": "String"
-					},
-					{
-						"name": "Closed",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Main HealthFacilities Pipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Execute SomHealthFacilities",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "pl_SomHealthFacilities",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Execute KenHealthFacilities",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "pl_KenHealthFacilities",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "Execute SomHealthFacilities",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Execute KenHealthFacilities",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "HealthFacilitiesJoinedDF",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"source2": {},
-									"sink2": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "Kept"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pl_SomHealthFacilities')]",
-				"[concat(variables('factoryId'), '/pipelines/pl_KenHealthFacilities')]",
-				"[concat(variables('factoryId'), '/dataflows/HealthFacilitiesJoinedDF')]"
+				"[concat(variables('factoryId'), '/datasets/ds_KenftsReqFundingTarget')]"
 			]
 		},
 		{
@@ -3800,581 +4548,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/KenftsReqFundingPQ')]",
 				"[concat(variables('factoryId'), '/datasets/ds_KenftsReqFunding_dfTarget')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pl_KenftsReqFunding')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "HttpReadSettings",
-									"requestMethod": "GET"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "countryCode",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "countryCode",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "id",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "id",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "name",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "name",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "code",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "code",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "typeId",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "typeId",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "typeName",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "typeName",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "startDate",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "startDate",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "endDate",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "endDate",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "year",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "year",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "requirements",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "requirements",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "funding",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "funding",
-											"type": "String",
-											"physicalType": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "percentFunded",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "percentFunded",
-											"type": "String",
-											"physicalType": "String"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_KenftsReqFundingSrc",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_KenftsReqFundingTarget",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Power Query1",
-						"type": "ExecuteWranglingDataflow",
-						"dependsOn": [
-							{
-								"activity": "Copy data1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "KenftsReqFunding",
-								"type": "DataFlowReference",
-								"datasetParameters": {
-									"ds_KenftsReqFundingTarget": {},
-									"UserQueryKenftsReqFundingPQ": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"queries": [
-								{
-									"queryName": "UserQuery",
-									"dataflowSinks": [
-										{
-											"name": "UserQueryKenftsReqFundingPQ",
-											"dataset": {
-												"referenceName": "KenftsReqFundingPQ",
-												"type": "DatasetReference",
-												"parameters": {}
-											},
-											"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tcountryCode as string,\n\t\tid as string,\n\t\tname as string,\n\t\tcode as string,\n\t\ttypeId as string,\n\t\ttypeName as string,\n\t\tstartDate as string,\n\t\tendDate as string,\n\t\tyear as string,\n\t\trequirements as string,\n\t\tfunding as string,\n\t\tpercentFunded as string\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> UserQueryKenftsReqFundingPQ"
-										}
-									]
-								}
-							]
-						}
-					},
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "Power Query1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "KenftsReqFundingDF",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "Kept"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_KenftsReqFundingSrc')]",
-				"[concat(variables('factoryId'), '/datasets/ds_KenftsReqFundingTarget')]",
-				"[concat(variables('factoryId'), '/dataflows/KenftsReqFunding')]",
-				"[concat(variables('factoryId'), '/dataflows/KenftsReqFundingDF')]",
-				"[concat(variables('factoryId'), '/datasets/KenftsReqFundingPQ')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_KenftsReqFundingTarget')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "KenftsReqFunding",
-						"folderPath": "target",
-						"container": "datakind"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "countryCode",
-						"type": "String"
-					},
-					{
-						"name": "id",
-						"type": "String"
-					},
-					{
-						"name": "name",
-						"type": "String"
-					},
-					{
-						"name": "code",
-						"type": "String"
-					},
-					{
-						"name": "typeId",
-						"type": "String"
-					},
-					{
-						"name": "typeName",
-						"type": "String"
-					},
-					{
-						"name": "startDate",
-						"type": "String"
-					},
-					{
-						"name": "endDate",
-						"type": "String"
-					},
-					{
-						"name": "year",
-						"type": "String"
-					},
-					{
-						"name": "requirements",
-						"type": "String"
-					},
-					{
-						"name": "funding",
-						"type": "String"
-					},
-					{
-						"name": "percentFunded",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_KenftsReqFunding_dfTarget')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": "target",
-						"container": "datakind"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "countryCode",
-						"type": "String"
-					},
-					{
-						"name": "id",
-						"type": "String"
-					},
-					{
-						"name": "name",
-						"type": "String"
-					},
-					{
-						"name": "code",
-						"type": "String"
-					},
-					{
-						"name": "startDate",
-						"type": "String"
-					},
-					{
-						"name": "endDate",
-						"type": "String"
-					},
-					{
-						"name": "year",
-						"type": "String"
-					},
-					{
-						"name": "clusterCode",
-						"type": "String"
-					},
-					{
-						"name": "cluster",
-						"type": "String"
-					},
-					{
-						"name": "requirements",
-						"type": "String"
-					},
-					{
-						"name": "funding",
-						"type": "String"
-					},
-					{
-						"name": "percentFunded",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/KenftsReqFunding')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "WranglingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"name": "ds_KenftsReqFundingTarget",
-							"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~>  ds_KenftsReqFundingTarget",
-							"dataset": {
-								"referenceName": "ds_KenftsReqFundingTarget",
-								"type": "DatasetReference"
-							}
-						}
-					],
-					"script": "section Section1;\r\nshared ds_KenftsReqFundingTarget = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/KenftsReqFunding\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"ds_KenftsReqFundingTarget\",\r\n  #\"Removed top rows\" = Table.Skip(Source, 1) in #\"Removed top rows\";\r\n",
-					"documentLocale": "en-us"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_KenftsReqFundingTarget')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/KenftsReqFundingPQ')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "part-00000-317f8a81-5415-4d1c-b82b-4b1de1e4a759-c000.csv",
-						"folderPath": "target",
-						"container": "datakind"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "countryCode",
-						"type": "String"
-					},
-					{
-						"name": "id",
-						"type": "String"
-					},
-					{
-						"name": "name",
-						"type": "String"
-					},
-					{
-						"name": "code",
-						"type": "String"
-					},
-					{
-						"name": "typeId",
-						"type": "String"
-					},
-					{
-						"name": "typeName",
-						"type": "String"
-					},
-					{
-						"name": "startDate",
-						"type": "String"
-					},
-					{
-						"name": "endDate",
-						"type": "String"
-					},
-					{
-						"name": "year",
-						"type": "String"
-					},
-					{
-						"name": "requirements",
-						"type": "String"
-					},
-					{
-						"name": "funding",
-						"type": "String"
-					},
-					{
-						"name": "percentFunded",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
 			]
 		}
 	]

@@ -13,6 +13,206 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenFoodPrices_df_target')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "part-00000-8bc485e3-6ad7-4f50-9047-99bfd94b14c2-c000.csv",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "date",
+						"type": "String"
+					},
+					{
+						"name": "admin1",
+						"type": "String"
+					},
+					{
+						"name": "admin2",
+						"type": "String"
+					},
+					{
+						"name": "market",
+						"type": "String"
+					},
+					{
+						"name": "latitude",
+						"type": "String"
+					},
+					{
+						"name": "longitude",
+						"type": "String"
+					},
+					{
+						"name": "category",
+						"type": "String"
+					},
+					{
+						"name": "commodity",
+						"type": "String"
+					},
+					{
+						"name": "unit",
+						"type": "String"
+					},
+					{
+						"name": "priceflag",
+						"type": "String"
+					},
+					{
+						"name": "pricetype",
+						"type": "String"
+					},
+					{
+						"name": "currency",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					},
+					{
+						"name": "usdprice",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenFoodPrices_dfsink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Filename": {
+						"type": "string",
+						"defaultValue": "KenFoodPrices"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenFoodPrices_target')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "KenFoodPrices",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "date",
+						"type": "String"
+					},
+					{
+						"name": "admin1",
+						"type": "String"
+					},
+					{
+						"name": "admin2",
+						"type": "String"
+					},
+					{
+						"name": "market",
+						"type": "String"
+					},
+					{
+						"name": "latitude",
+						"type": "String"
+					},
+					{
+						"name": "longitude",
+						"type": "String"
+					},
+					{
+						"name": "category",
+						"type": "String"
+					},
+					{
+						"name": "commodity",
+						"type": "String"
+					},
+					{
+						"name": "unit",
+						"type": "String"
+					},
+					{
+						"name": "priceflag",
+						"type": "String"
+					},
+					{
+						"name": "pricetype",
+						"type": "String"
+					},
+					{
+						"name": "currency",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					},
+					{
+						"name": "usdprice",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_KenFoodSecurityShpSrc')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -57,6 +257,122 @@
 					"firstRowAsHeader": true
 				},
 				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenHealthFacilitiesTarget')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "KenHealthFacilities",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Code",
+						"type": "String"
+					},
+					{
+						"name": "Name",
+						"type": "String"
+					},
+					{
+						"name": "Registration_number",
+						"type": "String"
+					},
+					{
+						"name": "Keph level",
+						"type": "String"
+					},
+					{
+						"name": "Facility type",
+						"type": "String"
+					},
+					{
+						"name": "Owner",
+						"type": "String"
+					},
+					{
+						"name": "Regulatory body",
+						"type": "String"
+					},
+					{
+						"name": "Beds",
+						"type": "String"
+					},
+					{
+						"name": "Cots",
+						"type": "String"
+					},
+					{
+						"name": "County",
+						"type": "String"
+					},
+					{
+						"name": "Constituency",
+						"type": "String"
+					},
+					{
+						"name": "Sub county",
+						"type": "String"
+					},
+					{
+						"name": "Ward",
+						"type": "String"
+					},
+					{
+						"name": "Operation status",
+						"type": "String"
+					},
+					{
+						"name": "Open_whole_day",
+						"type": "String"
+					},
+					{
+						"name": "Open_public_holidays",
+						"type": "String"
+					},
+					{
+						"name": "Open_weekends",
+						"type": "String"
+					},
+					{
+						"name": "Open_late_night",
+						"type": "String"
+					},
+					{
+						"name": "Service_names",
+						"type": "String"
+					},
+					{
+						"name": "Approved",
+						"type": "String"
+					},
+					{
+						"name": "Public visible",
+						"type": "String"
+					},
+					{
+						"name": "Closed",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": []
 		},
@@ -580,52 +896,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_formula1_raw')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_formula1_storage",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "circuits",
-						"folderPath": "pcoulibaly/raw",
-						"container": "training"
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_targetXLSX_binary')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "ds_targetXLSX_binary",
-						"folderPath": "target",
-						"container": "datakind"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pq_KenftsFundingGlobalCluster')]",
+			"name": "[concat(parameters('factoryName'), '/ds_KenftsReqFundingTarget')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -638,7 +909,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "KenftsFundingGlobalClusterPQ",
+						"fileName": "KenftsReqFunding",
 						"folderPath": "target",
 						"container": "datakind"
 					},
@@ -647,105 +918,131 @@
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
-				"schema": []
+				"schema": [
+					{
+						"name": "countryCode",
+						"type": "String"
+					},
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "code",
+						"type": "String"
+					},
+					{
+						"name": "typeId",
+						"type": "String"
+					},
+					{
+						"name": "typeName",
+						"type": "String"
+					},
+					{
+						"name": "startDate",
+						"type": "String"
+					},
+					{
+						"name": "endDate",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "requirements",
+						"type": "String"
+					},
+					{
+						"name": "funding",
+						"type": "String"
+					},
+					{
+						"name": "percentFunded",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/BinaryDataSourceStore')]",
+			"name": "[concat(parameters('factoryName'), '/ds_KenftsReqFunding_dfTarget')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Connection to your data source store. ",
 				"linkedServiceName": {
 					"referenceName": "ls_injectionsa",
 					"type": "LinkedServiceReference"
 				},
-				"parameters": {
-					"Container": {
-						"type": "string"
-					},
-					"Directory": {
-						"type": "string"
-					}
-				},
 				"annotations": [],
-				"type": "Binary",
+				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"folderPath": {
-							"value": "@dataset().Directory",
-							"type": "Expression"
-						},
-						"container": {
-							"value": "@dataset().Container",
-							"type": "Expression"
-						}
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/BinaryDataDestinationStore')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Connection to your data destination store.  ",
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"Container": {
-						"type": "string"
+						"folderPath": "target",
+						"container": "datakind"
 					},
-					"Directory": {
-						"type": "string"
-					}
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
 				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": {
-							"value": "@dataset().Directory",
-							"type": "Expression"
-						},
-						"container": {
-							"value": "@dataset().Container",
-							"type": "Expression"
-						}
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_SomHealthFacilitiesSrc')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_humData",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Somalia"
-				},
-				"annotations": [],
-				"type": "Excel",
-				"typeProperties": {
-					"sheetName": "HFs Data",
-					"location": {
-						"type": "HttpServerLocation",
-						"relativeUrl": "9fd710d4-ab87-43c9-b6da-39847af345b1/resource/3bc1cf5a-a46d-47a5-8f7f-93789f5db5b9/download/health-facilities.xlsx"
+				"schema": [
+					{
+						"name": "countryCode",
+						"type": "String"
 					},
-					"firstRowAsHeader": true
-				},
-				"schema": []
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "code",
+						"type": "String"
+					},
+					{
+						"name": "startDate",
+						"type": "String"
+					},
+					{
+						"name": "endDate",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "clusterCode",
+						"type": "String"
+					},
+					{
+						"name": "cluster",
+						"type": "String"
+					},
+					{
+						"name": "requirements",
+						"type": "String"
+					},
+					{
+						"name": "funding",
+						"type": "String"
+					},
+					{
+						"name": "percentFunded",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": []
 		}

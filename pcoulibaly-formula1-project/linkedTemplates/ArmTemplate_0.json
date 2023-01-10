@@ -214,6 +214,82 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/BinaryDataDestinationStore')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Connection to your data destination store.  ",
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Container": {
+						"type": "string"
+					},
+					"Directory": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@dataset().Directory",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().Container",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BinaryDataSourceStore')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Connection to your data source store. ",
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Container": {
+						"type": "string"
+					},
+					"Directory": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@dataset().Directory",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().Container",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/KenftsFundingGlobalCluster_dfsink')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -287,6 +363,84 @@
 					},
 					{
 						"name": "usdprice",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/KenftsReqFundingPQ')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "KenftsReqFundingPQ",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "countryCode",
+						"type": "String"
+					},
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "code",
+						"type": "String"
+					},
+					{
+						"name": "typeId",
+						"type": "String"
+					},
+					{
+						"name": "typeName",
+						"type": "String"
+					},
+					{
+						"name": "startDate",
+						"type": "String"
+					},
+					{
+						"name": "endDate",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "requirements",
+						"type": "String"
+					},
+					{
+						"name": "funding",
+						"type": "String"
+					},
+					{
+						"name": "percentFunded",
 						"type": "String"
 					}
 				]
@@ -515,212 +669,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_IPC')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_KenFoodPrices_df_target')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "part-00000-8bc485e3-6ad7-4f50-9047-99bfd94b14c2-c000.csv",
-						"folderPath": "target",
-						"container": "datakind"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "date",
-						"type": "String"
-					},
-					{
-						"name": "admin1",
-						"type": "String"
-					},
-					{
-						"name": "admin2",
-						"type": "String"
-					},
-					{
-						"name": "market",
-						"type": "String"
-					},
-					{
-						"name": "latitude",
-						"type": "String"
-					},
-					{
-						"name": "longitude",
-						"type": "String"
-					},
-					{
-						"name": "category",
-						"type": "String"
-					},
-					{
-						"name": "commodity",
-						"type": "String"
-					},
-					{
-						"name": "unit",
-						"type": "String"
-					},
-					{
-						"name": "priceflag",
-						"type": "String"
-					},
-					{
-						"name": "pricetype",
-						"type": "String"
-					},
-					{
-						"name": "currency",
-						"type": "String"
-					},
-					{
-						"name": "price",
-						"type": "String"
-					},
-					{
-						"name": "usdprice",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_KenFoodPrices_dfsink')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"Filename": {
-						"type": "string",
-						"defaultValue": "KenFoodPrices"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": "target",
-						"container": "datakind"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_KenFoodPrices_target')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "KenFoodPrices",
-						"folderPath": "target",
-						"container": "datakind"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "date",
-						"type": "String"
-					},
-					{
-						"name": "admin1",
-						"type": "String"
-					},
-					{
-						"name": "admin2",
-						"type": "String"
-					},
-					{
-						"name": "market",
-						"type": "String"
-					},
-					{
-						"name": "latitude",
-						"type": "String"
-					},
-					{
-						"name": "longitude",
-						"type": "String"
-					},
-					{
-						"name": "category",
-						"type": "String"
-					},
-					{
-						"name": "commodity",
-						"type": "String"
-					},
-					{
-						"name": "unit",
-						"type": "String"
-					},
-					{
-						"name": "priceflag",
-						"type": "String"
-					},
-					{
-						"name": "pricetype",
-						"type": "String"
-					},
-					{
-						"name": "currency",
-						"type": "String"
-					},
-					{
-						"name": "price",
-						"type": "String"
-					},
-					{
-						"name": "usdprice",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
 			]
 		}
 	]
