@@ -243,7 +243,7 @@
 										"referenceName": "KenftsReqFundingPQ",
 										"type": "DatasetReference"
 									},
-									"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tcountryCode as string,\n\t\tid as string,\n\t\tname as string,\n\t\tcode as string,\n\t\ttypeId as string,\n\t\ttypeName as string,\n\t\tstartDate as string,\n\t\tendDate as string,\n\t\tyear as string,\n\t\trequirements as string,\n\t\tfunding as string,\n\t\tpercentFunded as string\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> UserQueryKenftsReqFundingPQ"
+									"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tcountryCode as string,\n\t\tid as string,\n\t\tname as string,\n\t\tcode as string,\n\t\ttypeId as string,\n\t\ttypeName as string,\n\t\tstartDate as string,\n\t\tendDate as string,\n\t\tyear as string,\n\t\trequirements as string,\n\t\tfunding as string,\n\t\tpercentFunded as string\n\t),\n\tpartitionFileNames:['KenftsReqFundingPQ'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> UserQueryKenftsReqFundingPQ"
 								}
 							]
 						}

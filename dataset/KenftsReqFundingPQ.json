@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "part-00000-317f8a81-5415-4d1c-b82b-4b1de1e4a759-c000.csv",
+				"fileName": "KenftsReqFundingPQ",
 				"folderPath": "target",
 				"container": "datakind"
 			},
