@@ -46,7 +46,7 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "ds_KenftsReqFundingTarget",
+								"referenceName": "KenftsReqFundingPQ",
 								"type": "DatasetReference"
 							},
 							"name": "source1"
@@ -61,27 +61,33 @@
 							"name": "sink1"
 						}
 					],
-					"transformations": [],
+					"transformations": [
+						{
+							"name": "split1"
+						}
+					],
 					"scriptLines": [
 						"source(output(",
 						"          countryCode as string,",
-						"          id as string,",
+						"          id as short,",
 						"          name as string,",
 						"          code as string,",
-						"          typeId as string,",
+						"          typeId as short,",
 						"          typeName as string,",
-						"          startDate as string,",
-						"          endDate as string,",
-						"          year as string,",
-						"          requirements as string,",
-						"          funding as string,",
-						"          percentFunded as string",
+						"          startDate as date,",
+						"          endDate as date,",
+						"          year as short,",
+						"          requirements as integer,",
+						"          funding as integer,",
+						"          percentFunded as short",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     inferDriftedColumnTypes: true,",
 						"     ignoreNoFilesFound: false) ~> source1",
-						"source1 sink(allowSchemaDrift: true,",
+						"source1 split(contains(array(toString(columns())), isNull(#item)),",
+						"     disjoint: false) ~> split1@(Null, Good)",
+						"split1@Good sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          countryCode as string,",
@@ -1087,7 +1093,7 @@
 												"type": "DatasetReference",
 												"parameters": {}
 											},
-											"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> UserQueryKenftsReqFundingPQ"
+											"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tcountryCode as string,\n\t\tid as string,\n\t\tname as string,\n\t\tcode as string,\n\t\ttypeId as string,\n\t\ttypeName as string,\n\t\tstartDate as string,\n\t\tendDate as string,\n\t\tyear as string,\n\t\trequirements as string,\n\t\tfunding as string,\n\t\tpercentFunded as string\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> UserQueryKenftsReqFundingPQ"
 										}
 									]
 								}
