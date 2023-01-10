@@ -39,6 +39,176 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "#date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#date",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#adm1+name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#adm1+name",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#adm2+name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#adm2+name",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#loc+market+name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#loc+market+name",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#geo+lat",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#geo+lat",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#geo+lon",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#geo+lon",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#item+type",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#item+type",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#item+name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#item+name",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#item+unit",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#item+unit",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#item+price+flag",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#item+price+flag",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#item+price+type",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#item+price+type",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#currency",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#currency",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#value",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#value",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#value+usd",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#value+usd",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
