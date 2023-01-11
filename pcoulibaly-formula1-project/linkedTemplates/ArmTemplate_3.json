@@ -1614,168 +1614,168 @@
 								"mappings": [
 									{
 										"source": {
-											"name": "#date",
+											"name": "date",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "#date",
+											"name": "date",
 											"type": "String",
 											"physicalType": "String"
 										}
 									},
 									{
 										"source": {
-											"name": "#adm1+name",
+											"name": "admin1",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "#adm1+name",
+											"name": "admin1",
 											"type": "String",
 											"physicalType": "String"
 										}
 									},
 									{
 										"source": {
-											"name": "#adm2+name",
+											"name": "admin2",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "#adm2+name",
+											"name": "admin2",
 											"type": "String",
 											"physicalType": "String"
 										}
 									},
 									{
 										"source": {
-											"name": "#loc+market+name",
+											"name": "market",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "#loc+market+name",
+											"name": "market",
 											"type": "String",
 											"physicalType": "String"
 										}
 									},
 									{
 										"source": {
-											"name": "#geo+lat",
+											"name": "latitude",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "#geo+lat",
+											"name": "latitude",
 											"type": "String",
 											"physicalType": "String"
 										}
 									},
 									{
 										"source": {
-											"name": "#geo+lon",
+											"name": "longitude",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "#geo+lon",
+											"name": "longitude",
 											"type": "String",
 											"physicalType": "String"
 										}
 									},
 									{
 										"source": {
-											"name": "#item+type",
+											"name": "category",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "#item+type",
+											"name": "category",
 											"type": "String",
 											"physicalType": "String"
 										}
 									},
 									{
 										"source": {
-											"name": "#item+name",
+											"name": "commodity",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "#item+name",
+											"name": "commodity",
 											"type": "String",
 											"physicalType": "String"
 										}
 									},
 									{
 										"source": {
-											"name": "#item+unit",
+											"name": "unit",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "#item+unit",
+											"name": "unit",
 											"type": "String",
 											"physicalType": "String"
 										}
 									},
 									{
 										"source": {
-											"name": "#item+price+flag",
+											"name": "priceflag",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "#item+price+flag",
+											"name": "priceflag",
 											"type": "String",
 											"physicalType": "String"
 										}
 									},
 									{
 										"source": {
-											"name": "#item+price+type",
+											"name": "pricetype",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "#item+price+type",
+											"name": "pricetype",
 											"type": "String",
 											"physicalType": "String"
 										}
 									},
 									{
 										"source": {
-											"name": "#currency",
+											"name": "currency",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "#currency",
+											"name": "currency",
 											"type": "String",
 											"physicalType": "String"
 										}
 									},
 									{
 										"source": {
-											"name": "#value",
+											"name": "price",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "#value",
+											"name": "price",
 											"type": "String",
 											"physicalType": "String"
 										}
 									},
 									{
 										"source": {
-											"name": "#value+usd",
+											"name": "usdprice",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "#value+usd",
+											"name": "usdprice",
 											"type": "String",
 											"physicalType": "String"
 										}
@@ -1849,7 +1849,7 @@
 							{
 								"activity": "Copy data1",
 								"dependencyConditions": [
-									"Succeeded"
+									"Completed"
 								]
 							}
 						],
