@@ -728,7 +728,7 @@
 								"datasetParameters": {
 									"ds_KenFoodPrices_target": {},
 									"UserQuerydsdatakinddb": {
-										"tableName": "DatakindTablePQ"
+										"tableName": "datakindtable2"
 									}
 								}
 							},
@@ -747,7 +747,7 @@
 												"referenceName": "ds_datakinddb",
 												"type": "DatasetReference",
 												"parameters": {
-													"tableName": "DatakindTablePQ"
+													"tableName": "datakindtable2"
 												}
 											},
 											"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> UserQuerydsdatakinddb"
