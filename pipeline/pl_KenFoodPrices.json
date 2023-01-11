@@ -230,7 +230,7 @@
 				]
 			},
 			{
-				"name": "Power Query1",
+				"name": "Power Query2",
 				"type": "ExecuteWranglingDataflow",
 				"dependsOn": [
 					{
