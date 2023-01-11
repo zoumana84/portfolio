@@ -307,6 +307,77 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/KenFoodPricesDFDB')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "tobecleaned"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_KenFoodPrices_df_target",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_datakinddb",
+								"type": "DatasetReference"
+							},
+							"name": "sink2",
+							"description": "Export data to ds_KenFoodPrices_dfsink. This is because HTTP won't work with dataflow. So the data sink from pipeline2 is used in the DF for transformation purposes and then sent to the same sink with a different name"
+						}
+					],
+					"transformations": [
+						{
+							"name": "split1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          date as string,",
+						"          admin1 as string,",
+						"          admin2 as string,",
+						"          market as string,",
+						"          latitude as string,",
+						"          longitude as string,",
+						"          category as string,",
+						"          commodity as string,",
+						"          unit as string,",
+						"          priceflag as string,",
+						"          pricetype as string,",
+						"          currency as string,",
+						"          price as string,",
+						"          usdprice as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 split(contains(array(toString(columns())), isNull(#item)),",
+						"     disjoint: false) ~> split1@(Nulls, Good)",
+						"split1@Good sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink2"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Main HealthFacilities Pipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1496,6 +1567,347 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_KenFoodPricesDB')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "#date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#date",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#adm1+name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#adm1+name",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#adm2+name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#adm2+name",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#loc+market+name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#loc+market+name",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#geo+lat",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#geo+lat",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#geo+lon",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#geo+lon",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#item+type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#item+type",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#item+name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#item+name",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#item+unit",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#item+unit",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#item+price+flag",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#item+price+flag",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#item+price+type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#item+price+type",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#currency",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#currency",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#value",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#value",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "#value+usd",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "#value+usd",
+											"type": "String",
+											"physicalType": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_KenfoodPricesSrc",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_KenFoodPrices_target",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Power Query1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "KenFoodPricesDFDB",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink2": {
+										"tableName": "DatakindTable"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Power Query1",
+						"type": "ExecuteWranglingDataflow",
+						"dependsOn": [
+							{
+								"activity": "Copy data1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "KenFoodPrices",
+								"type": "DataFlowReference",
+								"datasetParameters": {
+									"ds_KenFoodPrices_df_target": {},
+									"UserQuerydsKenFoodPricesdftarget": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"queries": [
+								{
+									"queryName": "UserQuery",
+									"dataflowSinks": [
+										{
+											"name": "UserQuerydsKenFoodPricesdftarget",
+											"dataset": {
+												"referenceName": "ds_KenFoodPrices_df_target",
+												"type": "DatasetReference",
+												"parameters": {}
+											},
+											"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tdate as string,\n\t\tadmin1 as string,\n\t\tadmin2 as string,\n\t\tmarket as string,\n\t\tlatitude as string,\n\t\tlongitude as string,\n\t\tcategory as string,\n\t\tcommodity as string,\n\t\tunit as string,\n\t\tpriceflag as string,\n\t\tpricetype as string,\n\t\tcurrency as string,\n\t\tprice as string,\n\t\tusdprice as string\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> UserQuerydsKenFoodPricesdftarget"
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"Dataoutput": {
+						"type": "Array"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/KenFoodPricesDFDB')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/CSV_KenFoodPrices')]",
