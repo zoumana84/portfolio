@@ -230,42 +230,6 @@
 				]
 			},
 			{
-				"name": "Data flow1",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "Power Query1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "KenFoodPricesDF",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"sink2": {
-								"Filename": "KenFoodPrices"
-							}
-						}
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
 				"name": "Power Query1",
 				"type": "ExecuteWranglingDataflow",
 				"dependsOn": [
@@ -287,7 +251,12 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "KenFoodPrices",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"UserQuerydsdatakinddb": {
+								"tableName": "DatakindTablePQ"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
@@ -298,12 +267,15 @@
 							"queryName": "UserQuery",
 							"dataflowSinks": [
 								{
-									"name": "UserQuerydsKenFoodPricesdftarget",
+									"name": "UserQuerydsdatakinddb",
 									"dataset": {
-										"referenceName": "ds_KenFoodPrices_df_target",
-										"type": "DatasetReference"
+										"referenceName": "ds_datakinddb",
+										"type": "DatasetReference",
+										"parameters": {
+											"tableName": "DatakindTablePQ"
+										}
 									},
-									"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tdate as string,\n\t\tadmin1 as string,\n\t\tadmin2 as string,\n\t\tmarket as string,\n\t\tlatitude as string,\n\t\tlongitude as string,\n\t\tcategory as string,\n\t\tcommodity as string,\n\t\tunit as string,\n\t\tpriceflag as string,\n\t\tpricetype as string,\n\t\tcurrency as string,\n\t\tprice as string,\n\t\tusdprice as string\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> UserQuerydsKenFoodPricesdftarget"
+									"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> UserQuerydsdatakinddb"
 								}
 							]
 						}
