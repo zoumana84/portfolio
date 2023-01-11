@@ -1,0 +1,68 @@
+{
+	"name": "KenFoodPricesDFDB",
+	"properties": {
+		"folder": {
+			"name": "tobecleaned"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_KenFoodPrices_df_target",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_datakinddb",
+						"type": "DatasetReference"
+					},
+					"name": "sink2",
+					"description": "Export data to ds_KenFoodPrices_dfsink. This is because HTTP won't work with dataflow. So the data sink from pipeline2 is used in the DF for transformation purposes and then sent to the same sink with a different name"
+				}
+			],
+			"transformations": [
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          date as string,",
+				"          admin1 as string,",
+				"          admin2 as string,",
+				"          market as string,",
+				"          latitude as string,",
+				"          longitude as string,",
+				"          category as string,",
+				"          commodity as string,",
+				"          unit as string,",
+				"          priceflag as string,",
+				"          pricetype as string,",
+				"          currency as string,",
+				"          price as string,",
+				"          usdprice as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 split(contains(array(toString(columns())), isNull(#item)),",
+				"     disjoint: false) ~> split1@(Nulls, Good)",
+				"split1@Good sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2"
+			]
+		}
+	}
+}

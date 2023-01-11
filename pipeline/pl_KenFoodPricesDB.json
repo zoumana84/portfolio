@@ -1,0 +1,321 @@
+{
+	"name": "pl_KenFoodPricesDB",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "#date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#date",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#adm1+name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#adm1+name",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#adm2+name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#adm2+name",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#loc+market+name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#loc+market+name",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#geo+lat",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#geo+lat",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#geo+lon",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#geo+lon",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#item+type",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#item+type",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#item+name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#item+name",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#item+unit",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#item+unit",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#item+price+flag",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#item+price+flag",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#item+price+type",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#item+price+type",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#currency",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#currency",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#value",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#value",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "#value+usd",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "#value+usd",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_KenfoodPricesSrc",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_KenFoodPrices_target",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Power Query1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "KenFoodPricesDFDB",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"sink2": {
+								"tableName": "DatakindTable"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Power Query1",
+				"type": "ExecuteWranglingDataflow",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "KenFoodPrices",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"queries": [
+						{
+							"queryName": "UserQuery",
+							"dataflowSinks": [
+								{
+									"name": "UserQuerydsKenFoodPricesdftarget",
+									"dataset": {
+										"referenceName": "ds_KenFoodPrices_df_target",
+										"type": "DatasetReference"
+									},
+									"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tdate as string,\n\t\tadmin1 as string,\n\t\tadmin2 as string,\n\t\tmarket as string,\n\t\tlatitude as string,\n\t\tlongitude as string,\n\t\tcategory as string,\n\t\tcommodity as string,\n\t\tunit as string,\n\t\tpriceflag as string,\n\t\tpricetype as string,\n\t\tcurrency as string,\n\t\tprice as string,\n\t\tusdprice as string\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> UserQuerydsKenFoodPricesdftarget"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"Dataoutput": {
+				"type": "Array"
+			}
+		},
+		"annotations": []
+	}
+}

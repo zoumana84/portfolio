@@ -7,7 +7,8 @@
 		},
 		"parameters": {
 			"tableName": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "DatakindTable"
 			}
 		},
 		"annotations": [],
