@@ -1159,29 +1159,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/KenFoodPrices')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "WranglingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"name": "ds_KenFoodPrices_df_target",
-							"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ds_KenFoodPrices_df_target",
-							"dataset": {
-								"referenceName": "ds_KenFoodPrices_df_target",
-								"type": "DatasetReference"
-							}
-						}
-					],
-					"script": "section Section1;\r\nshared ds_KenFoodPrices_df_target = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/part-00000-8bc485e3-6ad7-4f50-9047-99bfd94b14c2-c000.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"ds_KenFoodPrices_df_target\",\n  #\"Removed top rows\" = Table.Skip(Source, 1),\n  #\"Added custom\" = Table.Profile(#\"Replaced value\") in #\"Removed top rows\";\r\n",
-					"documentLocale": "en-us"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/KenFoodPricesDF')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1399,6 +1376,29 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> sink1"
 					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/KenftsFundingGlobalCluster')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "WranglingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"name": "ds_KenftsFundingGlobalCluster_target",
+							"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ds_KenftsFundingGlobalCluster_target",
+							"dataset": {
+								"referenceName": "ds_KenftsFundingGlobalCluster_target",
+								"type": "DatasetReference"
+							}
+						}
+					],
+					"script": "section Section1;\r\nshared ds_KenftsFundingGlobalCluster_target = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/ds_KenftsFundingGlobalCluster.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = ds_KenftsFundingGlobalCluster_target,\r\n  #\"Replaced value\" = Table.ReplaceValue(Source, \"\", null, Replacer.ReplaceValue, {\"two\"}),\r\n  #\"Added custom\" = Table.Profile(#\"Replaced value\"),\r\n  #\"Changed column type\" = Table.TransformColumnTypes(#\"Added custom\", {{\"NullCount\", Int64.Type}}),\r\n  #\"Filtered rows\" = Table.SelectRows(#\"Changed column type\", each [NullCount] = 0),\r\n  Custom = Source,\r\n  #\"Replaced value 1\" = Table.ReplaceValue(Custom, \"\", \"Not provided\", Replacer.ReplaceValue, {\"countryCode\"}),\r\n  #\"Replaced value 2\" = Table.ReplaceValue(#\"Replaced value 1\", \"\", \"Not provided\", Replacer.ReplaceValue, {\"clusterCode\", \"requirements\"}),\r\n  #\"Replaced value 3\" = Table.ReplaceValue(#\"Replaced value 2\", \"\", \"Not provided\", Replacer.ReplaceValue, {\"percentFunded\", \"funding\"}),\r\n  #\"Removed top rows\" = Table.Skip(#\"Replaced value 3\", 1)\r\nin\r\n  #\"Removed top rows\";\r\n",
+					"documentLocale": "en-us"
 				}
 			},
 			"dependsOn": []
