@@ -23,6 +23,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ls_injectionsa'"
 		},
+		"ls_DataKindPostgreSql_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_DataKindPostgreSql'"
+		},
 		"ls_IPC_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://map.ipcinfo.org/api/public/"
@@ -210,6 +214,19 @@
 			"properties": {
 				"type": "SelfHosted",
 				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_DataKindPostgreSql')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzurePostgreSql",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_DataKindPostgreSql_connectionString')]"
+				}
 			},
 			"dependsOn": []
 		},
@@ -644,31 +661,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_humData')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_KenFoodInsecuritySrc')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_IPC",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Kenya Binary"
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "HttpServerLocation",
-						"relativeUrl": "population-tracking-tool/data/2017,2022/?export=true&condition=A&country=KE"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_IPC')]"
 			]
 		}
 	]

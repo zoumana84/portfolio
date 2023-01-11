@@ -13,6 +13,29 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenFoodInsecuritySrc')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_IPC",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Kenya Binary"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "population-tracking-tool/data/2017,2022/?export=true&condition=A&country=KE"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_KenFoodPrices_df_target')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -953,81 +976,6 @@
 					},
 					{
 						"name": "year",
-						"type": "String"
-					},
-					{
-						"name": "requirements",
-						"type": "String"
-					},
-					{
-						"name": "funding",
-						"type": "String"
-					},
-					{
-						"name": "percentFunded",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_KenftsReqFunding_dfTarget')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_injectionsa",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": "target",
-						"container": "datakind"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "countryCode",
-						"type": "String"
-					},
-					{
-						"name": "id",
-						"type": "String"
-					},
-					{
-						"name": "name",
-						"type": "String"
-					},
-					{
-						"name": "code",
-						"type": "String"
-					},
-					{
-						"name": "startDate",
-						"type": "String"
-					},
-					{
-						"name": "endDate",
-						"type": "String"
-					},
-					{
-						"name": "year",
-						"type": "String"
-					},
-					{
-						"name": "clusterCode",
-						"type": "String"
-					},
-					{
-						"name": "cluster",
 						"type": "String"
 					},
 					{

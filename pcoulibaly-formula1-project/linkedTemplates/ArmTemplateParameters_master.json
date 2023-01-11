@@ -17,6 +17,9 @@
 		"ls_injectionsa_connectionString": {
 			"value": ""
 		},
+		"ls_DataKindPostgreSql_connectionString": {
+			"value": ""
+		},
 		"ls_IPC_properties_typeProperties_url": {
 			"value": "https://map.ipcinfo.org/api/public/"
 		},

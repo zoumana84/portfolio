@@ -13,6 +13,81 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenftsReqFunding_dfTarget')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_injectionsa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "target",
+						"container": "datakind"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "countryCode",
+						"type": "String"
+					},
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "code",
+						"type": "String"
+					},
+					{
+						"name": "startDate",
+						"type": "String"
+					},
+					{
+						"name": "endDate",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "clusterCode",
+						"type": "String"
+					},
+					{
+						"name": "cluster",
+						"type": "String"
+					},
+					{
+						"name": "requirements",
+						"type": "String"
+					},
+					{
+						"name": "funding",
+						"type": "String"
+					},
+					{
+						"name": "percentFunded",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_SomHealthFacilitiesSrc')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -185,6 +260,30 @@
 					"quoteChar": "\""
 				},
 				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_datakinddb')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_DataKindPostgreSql",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"tableName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "public",
+					"table": "@dataset().tableName"
+				}
 			},
 			"dependsOn": []
 		},
@@ -1298,107 +1397,6 @@
 						"     validateSchema: false,",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/KenftsFundingGlobalCluster')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "WranglingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"name": "ds_KenftsFundingGlobalCluster_target",
-							"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ds_KenftsFundingGlobalCluster_target",
-							"dataset": {
-								"referenceName": "ds_KenftsFundingGlobalCluster_target",
-								"type": "DatasetReference"
-							}
-						}
-					],
-					"script": "section Section1;\r\nshared ds_KenftsFundingGlobalCluster_target = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorageaccount.blob.core.windows.net/datakind/target/ds_KenftsFundingGlobalCluster.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = ds_KenftsFundingGlobalCluster_target,\r\n  #\"Replaced value\" = Table.ReplaceValue(Source, \"\", null, Replacer.ReplaceValue, {\"two\"}),\r\n  #\"Added custom\" = Table.Profile(#\"Replaced value\"),\r\n  #\"Changed column type\" = Table.TransformColumnTypes(#\"Added custom\", {{\"NullCount\", Int64.Type}}),\r\n  #\"Filtered rows\" = Table.SelectRows(#\"Changed column type\", each [NullCount] = 0),\r\n  Custom = Source,\r\n  #\"Replaced value 1\" = Table.ReplaceValue(Custom, \"\", \"Not provided\", Replacer.ReplaceValue, {\"countryCode\"}),\r\n  #\"Replaced value 2\" = Table.ReplaceValue(#\"Replaced value 1\", \"\", \"Not provided\", Replacer.ReplaceValue, {\"clusterCode\", \"requirements\"}),\r\n  #\"Replaced value 3\" = Table.ReplaceValue(#\"Replaced value 2\", \"\", \"Not provided\", Replacer.ReplaceValue, {\"percentFunded\", \"funding\"}),\r\n  #\"Removed top rows\" = Table.Skip(#\"Replaced value 3\", 1)\r\nin\r\n  #\"Removed top rows\";\r\n",
-					"documentLocale": "en-us"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/KenftsFundingGlobalClusterDF')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "tobecleaned"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_KenftsFundingGlobalCluster_target",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "KenftsFundingGlobalCluster_dfsink",
-								"type": "DatasetReference"
-							},
-							"name": "sink2"
-						}
-					],
-					"transformations": [
-						{
-							"name": "split1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          countryCode as string,",
-						"          id as short,",
-						"          name as string,",
-						"          code as string,",
-						"          startDate as date,",
-						"          endDate as date,",
-						"          year as short,",
-						"          clusterCode as short,",
-						"          cluster as string,",
-						"          requirements as integer,",
-						"          funding as integer,",
-						"          percentFunded as short",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     inferDriftedColumnTypes: true,",
-						"     ignoreNoFilesFound: false) ~> source1",
-						"source1 split(contains(array(toString(columns())), isNull(#item)),",
-						"     disjoint: false) ~> split1@(Nulls, good)",
-						"split1@good sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          date as string,",
-						"          admin1 as string,",
-						"          market as string,",
-						"          latitude as string,",
-						"          longitude as string,",
-						"          category as string,",
-						"          commodity as string,",
-						"          unit as string,",
-						"          priceflag as string,",
-						"          pricetype as string,",
-						"          currency as string,",
-						"          price as string,",
-						"          usdprice as string",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink2"
 					]
 				}
 			},

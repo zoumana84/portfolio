@@ -23,6 +23,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ls_injectionsa'"
 		},
+		"ls_DataKindPostgreSql_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_DataKindPostgreSql'"
+		},
 		"ls_IPC_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://map.ipcinfo.org/api/public/"
@@ -113,6 +117,9 @@
 					},
 					"ls_injectionsa_connectionString": {
 						"value": "[parameters('ls_injectionsa_connectionString')]"
+					},
+					"ls_DataKindPostgreSql_connectionString": {
+						"value": "[parameters('ls_DataKindPostgreSql_connectionString')]"
 					},
 					"ls_IPC_properties_typeProperties_url": {
 						"value": "[parameters('ls_IPC_properties_typeProperties_url')]"
