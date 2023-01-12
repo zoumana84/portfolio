@@ -218,7 +218,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_KenfoodPricesSrc",
+						"referenceName": "ds_KenfoodpriceSrc",
 						"type": "DatasetReference"
 					}
 				],
