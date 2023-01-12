@@ -1,6 +1,10 @@
 {
 	"name": "ds_KenAdminDivShpSrc",
 	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_humdata",
+			"type": "LinkedServiceReference"
+		},
 		"folder": {
 			"name": "Kenya Binary"
 		},
