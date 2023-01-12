@@ -282,6 +282,57 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "Power Query1",
+						"type": "ExecuteWranglingDataflow",
+						"dependsOn": [
+							{
+								"activity": "Copy data1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "KenFoodPrice",
+								"type": "DataFlowReference",
+								"datasetParameters": {
+									"ds_KenFoodPrice_copied": {},
+									"kenFoodPricePQ": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"queries": [
+								{
+									"queryName": "UserQuery",
+									"dataflowSinks": [
+										{
+											"name": "kenFoodPricePQ",
+											"dataset": {
+												"referenceName": "ds_kenfoodprice_p",
+												"type": "DatasetReference",
+												"parameters": {}
+											},
+											"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['KenFoodPrice_PQ'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> kenFoodPricePQ"
+										}
+									]
+								}
+							]
+						}
 					}
 				],
 				"policy": {
@@ -292,7 +343,9 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_KenfoodpriceSrc')]",
-				"[concat(variables('factoryId'), '/datasets/ds_KenFoodPrice_copied')]"
+				"[concat(variables('factoryId'), '/datasets/ds_KenFoodPrice_copied')]",
+				"[concat(variables('factoryId'), '/dataflows/KenFoodPrice')]",
+				"[concat(variables('factoryId'), '/datasets/ds_kenfoodprice_p')]"
 			]
 		},
 		{
@@ -1146,7 +1199,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_kenfoodprice_pq')]",
+			"name": "[concat(parameters('factoryName'), '/ds_kenfoodprice_p')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1514,6 +1567,31 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_injectionsa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/KenFoodPrice')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "WranglingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"name": "ds_KenFoodPrice_copied",
+							"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~>  ds_KenFoodPrice_copied",
+							"dataset": {
+								"referenceName": "ds_KenFoodPrice_copied",
+								"type": "DatasetReference"
+							}
+						}
+					],
+					"script": "section Section1;\r\nshared ds_KenFoodPrice_copied = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorage.blob.core.windows.net/datakind/copyTarget/KenFoodPrice\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"ds_KenFoodPrice_copied\",\r\n  #\"Removed top rows\" = Table.Skip(Source, 1) in #\"Removed top rows\";\r\n",
+					"documentLocale": "en-us"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_KenFoodPrice_copied')]"
 			]
 		}
 	]
