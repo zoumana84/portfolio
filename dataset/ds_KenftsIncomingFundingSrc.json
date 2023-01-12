@@ -20,6 +20,155 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "date",
+				"type": "String"
+			},
+			{
+				"name": "budgetYear",
+				"type": "String"
+			},
+			{
+				"name": "description",
+				"type": "String"
+			},
+			{
+				"name": "amountUSD",
+				"type": "String"
+			},
+			{
+				"name": "srcOrganization",
+				"type": "String"
+			},
+			{
+				"name": "srcOrganizationTypes",
+				"type": "String"
+			},
+			{
+				"name": "srcLocations",
+				"type": "String"
+			},
+			{
+				"name": "srcUsageYearStart",
+				"type": "String"
+			},
+			{
+				"name": "srcUsageYearEnd",
+				"type": "String"
+			},
+			{
+				"name": "destPlan",
+				"type": "String"
+			},
+			{
+				"name": "destPlanCode",
+				"type": "String"
+			},
+			{
+				"name": "destPlanId",
+				"type": "String"
+			},
+			{
+				"name": "destOrganization",
+				"type": "String"
+			},
+			{
+				"name": "destOrganizationTypes",
+				"type": "String"
+			},
+			{
+				"name": "destGlobalClusters",
+				"type": "String"
+			},
+			{
+				"name": "destLocations",
+				"type": "String"
+			},
+			{
+				"name": "destProject",
+				"type": "String"
+			},
+			{
+				"name": "destProjectCode",
+				"type": "String"
+			},
+			{
+				"name": "destEmergency",
+				"type": "String"
+			},
+			{
+				"name": "destUsageYearStart",
+				"type": "String"
+			},
+			{
+				"name": "destUsageYearEnd",
+				"type": "String"
+			},
+			{
+				"name": "contributionType",
+				"type": "String"
+			},
+			{
+				"name": "flowType",
+				"type": "String"
+			},
+			{
+				"name": "method",
+				"type": "String"
+			},
+			{
+				"name": "boundary",
+				"type": "String"
+			},
+			{
+				"name": "onBoundary",
+				"type": "String"
+			},
+			{
+				"name": "status",
+				"type": "String"
+			},
+			{
+				"name": "firstReportedDate",
+				"type": "String"
+			},
+			{
+				"name": "decisionDate",
+				"type": "String"
+			},
+			{
+				"name": "keywords",
+				"type": "String"
+			},
+			{
+				"name": "originalAmount",
+				"type": "String"
+			},
+			{
+				"name": "originalCurrency",
+				"type": "String"
+			},
+			{
+				"name": "exchangeRate",
+				"type": "String"
+			},
+			{
+				"name": "id",
+				"type": "String"
+			},
+			{
+				"name": "refCode",
+				"type": "String"
+			},
+			{
+				"name": "createdAt",
+				"type": "String"
+			},
+			{
+				"name": "updatedAt",
+				"type": "String"
+			}
+		]
 	}
 }

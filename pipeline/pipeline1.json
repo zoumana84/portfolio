@@ -38,12 +38,6 @@
 						"referenceName": "ds_KenFoodInsecuritySrc",
 						"type": "DatasetReference"
 					}
-				],
-				"outputs": [
-					{
-						"referenceName": "ds_targetXLSX_binary",
-						"type": "DatasetReference"
-					}
 				]
 			}
 		],

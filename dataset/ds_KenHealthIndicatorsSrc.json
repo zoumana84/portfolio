@@ -20,6 +20,31 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "Country Name",
+				"type": "String"
+			},
+			{
+				"name": "Country ISO3",
+				"type": "String"
+			},
+			{
+				"name": "Year",
+				"type": "String"
+			},
+			{
+				"name": "Indicator Name",
+				"type": "String"
+			},
+			{
+				"name": "Indicator Code",
+				"type": "String"
+			},
+			{
+				"name": "Value",
+				"type": "String"
+			}
+		]
 	}
 }

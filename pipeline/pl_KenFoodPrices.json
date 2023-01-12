@@ -36,64 +36,14 @@
 							"fileExtension": ".txt"
 						}
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
+					"enableStaging": false
 				},
 				"inputs": [
 					{
 						"referenceName": "ds_KenfoodPricesSrc",
 						"type": "DatasetReference"
 					}
-				],
-				"outputs": [
-					{
-						"referenceName": "ds_KenFoodPrices_target",
-						"type": "DatasetReference"
-					}
 				]
-			},
-			{
-				"name": "Data flow1",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "Copy data1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "KenFoodPricesDF",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"sink1": {
-								"Filename": "KenFoodPrices"
-							}
-						}
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
 			}
 		],
 		"annotations": []
