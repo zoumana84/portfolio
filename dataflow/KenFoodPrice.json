@@ -1,5 +1,5 @@
 {
-	"name": "powerquery1",
+	"name": "KenFoodPrice",
 	"properties": {
 		"type": "WranglingDataFlow",
 		"typeProperties": {
