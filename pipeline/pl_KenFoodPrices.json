@@ -43,188 +43,149 @@
 							{
 								"source": {
 									"name": "date",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "date",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "admin1",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "admin1",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "admin2",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "admin2",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "market",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "market",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "latitude",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "latitude",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "longitude",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "longitude",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "category",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "category",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "commodity",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "commodity",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "unit",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "unit",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "priceflag",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "priceflag",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "pricetype",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "pricetype",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "currency",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "currency",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "price",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "price",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "usdprice",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "usdprice",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							}
-						],
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
+						]
 					}
 				},
 				"inputs": [
 					{
 						"referenceName": "ds_KenfoodpriceSrc",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "ds_KenFoodPrice_copied",
 						"type": "DatasetReference"
 					}
 				]
