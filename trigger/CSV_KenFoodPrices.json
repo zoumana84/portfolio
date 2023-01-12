@@ -6,7 +6,7 @@
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "pl_KenFoodPrices",
+					"referenceName": "pl_KenFoodPr",
 					"type": "PipelineReference"
 				}
 			}
