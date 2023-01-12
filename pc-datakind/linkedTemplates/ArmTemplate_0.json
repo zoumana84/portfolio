@@ -1,0 +1,622 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "pc-datakind"
+		},
+		"datakind_test_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'datakind_test_ls'"
+		},
+		"ls_dataKindPostgres_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_dataKindPostgres'"
+		},
+		"ls_injectionsa_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_injectionsa'"
+		},
+		"ls_IPC_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://map.ipcinfo.org/api/public/"
+		},
+		"ls_fewsData_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://fdw.fews.net/api/marketpricefacts/"
+		},
+		"ls_fewsDataKenFoodSecurity_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://fdw.fews.net/api/ipcpackage/?country_code=KE&collection_date="
+		},
+		"ls_fewsDataSomFoodSecurity_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://fdw.fews.net/api/ipcpackage/?country_code=SO&collection_date="
+		},
+		"ls_hotosm_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://export.hotosm.org/downloads/"
+		},
+		"ls_humdata_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://data.humdata.org/dataset/"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/datakind_test_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('datakind_test_ls_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_IPC')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('ls_IPC_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_dataKindPostgres')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Linked service for Postgres DB",
+				"annotations": [],
+				"type": "AzurePostgreSql",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_dataKindPostgres_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_fewsData')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('ls_fewsData_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_fewsDataKenFoodSecurity')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('ls_fewsDataKenFoodSecurity_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_fewsDataSomFoodSecurity')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('ls_fewsDataSomFoodSecurity_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_hotosm')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('ls_hotosm_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/integrationRuntime1')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_humdata')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('ls_humdata_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_injectionsa')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_injectionsa_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenAdminBoundariesSrc')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_humdata",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Kenya Binary"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "26801642-7088-4149-9605-6ae282897937/resource/bfe30344-5fb4-45dd-b1d1-565690aba5fc/download/ken_adminboundaries_tabulardata.xlsx"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_humdata')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenAdminDivShpSrc')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_humdata",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Kenya Binary"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "2c0b7571-4bef-4347-9b81-b2174c13f9ef/resource/03df9cbb-0b4f-4f22-9eb7-3cbd0157fd3d/download/ken_adm_iebc_20191031_shp.zip"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_humdata')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenFoodInsecuritySrc')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_IPC",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Kenya Binary"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "population-tracking-tool/data/2017,2022/?export=true&condition=A&country=KE"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_IPC')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenFoodPrice_DBTarget')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dataKindPostgres",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"tableName": {
+						"type": "string",
+						"defaultValue": "kenfoodprice"
+					}
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "public",
+					"table": {
+						"value": "@dataset().tableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_dataKindPostgres')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenFoodSecurityShpSrc')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_fewsDataKenFoodSecurity",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Kenya Binary"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_fewsDataKenFoodSecurity')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenHealthFacilitiesExcel')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_humdata",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Kenya"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Sheet1",
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "7b9c2851-dc37-4a88-9dcb-62e55eb91baf/resource/df6bfc55-3b25-4309-a1b4-74afba434956/download/kenya-health-facilities-2017_08_02.xlsx"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "Code",
+						"type": "String"
+					},
+					{
+						"name": "Name",
+						"type": "String"
+					},
+					{
+						"name": "Registration_number",
+						"type": "String"
+					},
+					{
+						"name": "Keph level",
+						"type": "String"
+					},
+					{
+						"name": "Facility type",
+						"type": "String"
+					},
+					{
+						"name": "Owner",
+						"type": "String"
+					},
+					{
+						"name": "Regulatory body",
+						"type": "String"
+					},
+					{
+						"name": "Beds",
+						"type": "String"
+					},
+					{
+						"name": "Cots",
+						"type": "String"
+					},
+					{
+						"name": "County",
+						"type": "String"
+					},
+					{
+						"name": "Constituency",
+						"type": "String"
+					},
+					{
+						"name": "Sub county",
+						"type": "String"
+					},
+					{
+						"name": "Ward",
+						"type": "String"
+					},
+					{
+						"name": "Operation status",
+						"type": "String"
+					},
+					{
+						"name": "Open_whole_day",
+						"type": "String"
+					},
+					{
+						"name": "Open_public_holidays",
+						"type": "String"
+					},
+					{
+						"name": "Open_weekends",
+						"type": "String"
+					},
+					{
+						"name": "Open_late_night",
+						"type": "String"
+					},
+					{
+						"name": "Service_names",
+						"type": "String"
+					},
+					{
+						"name": "Approved",
+						"type": "String"
+					},
+					{
+						"name": "Public visible",
+						"type": "String"
+					},
+					{
+						"name": "Closed",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_humdata')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenHealthIndicatorsSrc')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_humdata",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Kenya"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "e849a312-8962-4595-ace8-500484490569/resource/daa8e9e1-4013-4075-a625-149317412a56/download/health_ken.csv/"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Country Name",
+						"type": "String"
+					},
+					{
+						"name": "Country ISO3",
+						"type": "String"
+					},
+					{
+						"name": "Year",
+						"type": "String"
+					},
+					{
+						"name": "Indicator Name",
+						"type": "String"
+					},
+					{
+						"name": "Indicator Code",
+						"type": "String"
+					},
+					{
+						"name": "Value",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_humdata')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenPopulationStatistics2019Src')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_humdata",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Kenya Binary"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "26801642-7088-4149-9605-6ae282897937/resource/e57fb9a8-96dc-4a21-849b-1ddbc4ed7803/download/ken_admpop_2019.xlsx"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_humdata')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenRoadsSrc')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_hotosm",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Kenya Binary"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "6b3f8c4a-589d-4537-99e4-1518937c23a8/hotosm_ken_roads_lines_shp.zip"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_hotosm')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_KenftsFundingClusterSrc')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_humdata",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Kenya"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": "d0bf93aa-bc16-426b-b53b-c8c90fac98a4/resource/5b10afe9-cd6d-4dcf-9514-52890b3a776e/download/fts_requirements_funding_cluster_ken.csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "countryCode",
+						"type": "String"
+					},
+					{
+						"name": "id",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "code",
+						"type": "String"
+					},
+					{
+						"name": "startDate",
+						"type": "String"
+					},
+					{
+						"name": "endDate",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "clusterCode",
+						"type": "String"
+					},
+					{
+						"name": "cluster",
+						"type": "String"
+					},
+					{
+						"name": "requirements",
+						"type": "String"
+					},
+					{
+						"name": "funding",
+						"type": "String"
+					},
+					{
+						"name": "percentFunded",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_humdata')]"
+			]
+		}
+	]
+}

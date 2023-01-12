@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "pc-datakind"
+		},
+		"datakind_test_ls_connectionString": {
+			"value": ""
+		},
+		"ls_dataKindPostgres_connectionString": {
+			"value": ""
+		},
+		"ls_injectionsa_connectionString": {
+			"value": ""
+		},
+		"ls_IPC_properties_typeProperties_url": {
+			"value": "https://map.ipcinfo.org/api/public/"
+		},
+		"ls_fewsData_properties_typeProperties_url": {
+			"value": "https://fdw.fews.net/api/marketpricefacts/"
+		},
+		"ls_fewsDataKenFoodSecurity_properties_typeProperties_url": {
+			"value": "https://fdw.fews.net/api/ipcpackage/?country_code=KE&collection_date="
+		},
+		"ls_fewsDataSomFoodSecurity_properties_typeProperties_url": {
+			"value": "https://fdw.fews.net/api/ipcpackage/?country_code=SO&collection_date="
+		},
+		"ls_hotosm_properties_typeProperties_url": {
+			"value": "https://export.hotosm.org/downloads/"
+		},
+		"ls_humdata_properties_typeProperties_url": {
+			"value": "https://data.humdata.org/dataset/"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

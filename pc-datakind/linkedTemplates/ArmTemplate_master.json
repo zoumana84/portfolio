@@ -1,0 +1,125 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "pc-datakind"
+		},
+		"datakind_test_ls_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'datakind_test_ls'"
+		},
+		"ls_dataKindPostgres_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_dataKindPostgres'"
+		},
+		"ls_injectionsa_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_injectionsa'"
+		},
+		"ls_IPC_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://map.ipcinfo.org/api/public/"
+		},
+		"ls_fewsData_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://fdw.fews.net/api/marketpricefacts/"
+		},
+		"ls_fewsDataKenFoodSecurity_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://fdw.fews.net/api/ipcpackage/?country_code=KE&collection_date="
+		},
+		"ls_fewsDataSomFoodSecurity_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://fdw.fews.net/api/ipcpackage/?country_code=SO&collection_date="
+		},
+		"ls_hotosm_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://export.hotosm.org/downloads/"
+		},
+		"ls_humdata_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://data.humdata.org/dataset/"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "pc-datakind_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"datakind_test_ls_connectionString": {
+						"value": "[parameters('datakind_test_ls_connectionString')]"
+					},
+					"ls_dataKindPostgres_connectionString": {
+						"value": "[parameters('ls_dataKindPostgres_connectionString')]"
+					},
+					"ls_injectionsa_connectionString": {
+						"value": "[parameters('ls_injectionsa_connectionString')]"
+					},
+					"ls_IPC_properties_typeProperties_url": {
+						"value": "[parameters('ls_IPC_properties_typeProperties_url')]"
+					},
+					"ls_fewsData_properties_typeProperties_url": {
+						"value": "[parameters('ls_fewsData_properties_typeProperties_url')]"
+					},
+					"ls_fewsDataKenFoodSecurity_properties_typeProperties_url": {
+						"value": "[parameters('ls_fewsDataKenFoodSecurity_properties_typeProperties_url')]"
+					},
+					"ls_fewsDataSomFoodSecurity_properties_typeProperties_url": {
+						"value": "[parameters('ls_fewsDataSomFoodSecurity_properties_typeProperties_url')]"
+					},
+					"ls_hotosm_properties_typeProperties_url": {
+						"value": "[parameters('ls_hotosm_properties_typeProperties_url')]"
+					},
+					"ls_humdata_properties_typeProperties_url": {
+						"value": "[parameters('ls_humdata_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "pc-datakind_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'pc-datakind_ArmTemplate_0')]"
+			]
+		}
+	]
+}
