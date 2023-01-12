@@ -1,20 +1,41 @@
 {
 	"name": "KenFoodPrice",
 	"properties": {
-		"type": "WranglingDataFlow",
+		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
-					"name": "ds_KenFoodPrice_copied",
-					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~>  ds_KenFoodPrice_copied",
 					"dataset": {
-						"referenceName": "ds_KenFoodPrice_copied",
+						"referenceName": "ds_kenfoodprice_pq",
 						"type": "DatasetReference"
-					}
+					},
+					"name": "source1"
 				}
 			],
-			"script": "section Section1;\r\nshared ds_KenFoodPrice_copied = let AdfDoc = AzureStorage.BlobContents(\"https://pcoulibalystorage.blob.core.windows.net/datakind/copyTarget/KenFoodPrice\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"ds_KenFoodPrice_copied\",\r\n  #\"Removed top rows\" = Table.Skip(Source, 1) in #\"Removed top rows\";\r\n",
-			"documentLocale": "en-us"
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_KenFoodPrice_DBTarget",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
 		}
 	}
 }
