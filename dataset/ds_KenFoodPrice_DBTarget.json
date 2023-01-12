@@ -1,0 +1,25 @@
+{
+	"name": "ds_KenFoodPrice_DBTarget",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dataKindPostgres",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tableName": {
+				"type": "string",
+				"defaultValue": "kenfoodprice"
+			}
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "public",
+			"table": {
+				"value": "@dataset().tableName",
+				"type": "Expression"
+			}
+		}
+	}
+}
