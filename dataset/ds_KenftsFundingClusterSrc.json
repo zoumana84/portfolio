@@ -2,7 +2,7 @@
 	"name": "ds_KenftsFundingClusterSrc",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "ls_humData",
+			"referenceName": "ls_humdata",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {

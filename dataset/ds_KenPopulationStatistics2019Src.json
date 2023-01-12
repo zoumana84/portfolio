@@ -1,10 +1,6 @@
 {
 	"name": "ds_KenPopulationStatistics2019Src",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "ls_humData",
-			"type": "LinkedServiceReference"
-		},
 		"folder": {
 			"name": "Kenya Binary"
 		},
