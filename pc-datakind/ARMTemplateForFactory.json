@@ -323,7 +323,7 @@
 										{
 											"name": "kenFoodPricePQ",
 											"dataset": {
-												"referenceName": "ds_kenfoodprice_p",
+												"referenceName": "ds_kenfoodprice_pq",
 												"type": "DatasetReference",
 												"parameters": {}
 											},
@@ -345,7 +345,7 @@
 				"[concat(variables('factoryId'), '/datasets/ds_KenfoodpriceSrc')]",
 				"[concat(variables('factoryId'), '/datasets/ds_KenFoodPrice_copied')]",
 				"[concat(variables('factoryId'), '/dataflows/KenFoodPrice')]",
-				"[concat(variables('factoryId'), '/datasets/ds_kenfoodprice_p')]"
+				"[concat(variables('factoryId'), '/datasets/ds_kenfoodprice_pq')]"
 			]
 		},
 		{
@@ -1199,7 +1199,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_kenfoodprice_p')]",
+			"name": "[concat(parameters('factoryName'), '/ds_kenfoodprice_pq')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
