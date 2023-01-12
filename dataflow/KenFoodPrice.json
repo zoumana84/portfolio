@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "ds_KenFoodPrice_copied",
+						"referenceName": "ds_kenfoodprice_pq",
 						"type": "DatasetReference"
 					},
 					"name": "source1"
@@ -21,28 +21,34 @@
 					"name": "sink1"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "split1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
-				"          date as string,",
-				"          admin1 as string,",
-				"          admin2 as string,",
-				"          market as string,",
-				"          latitude as string,",
-				"          longitude as string,",
-				"          category as string,",
-				"          commodity as string,",
-				"          unit as string,",
-				"          priceflag as string,",
-				"          pricetype as string,",
-				"          currency as string,",
-				"          price as string,",
-				"          usdprice as string",
+				"          {_col0_} as date,",
+				"          {_col1_} as string,",
+				"          {_col2_} as string,",
+				"          {_col3_} as string,",
+				"          {_col4_} as double,",
+				"          {_col5_} as double,",
+				"          {_col6_} as string,",
+				"          {_col7_} as string,",
+				"          {_col8_} as string,",
+				"          {_col9_} as string,",
+				"          {_col10_} as string,",
+				"          {_col11_} as string,",
+				"          {_col12_} as double,",
+				"          {_col13_} as double",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
+				"source1 split(contains(array(toString(columns())), isNull(#item)),",
+				"     disjoint: false) ~> split1@(Null, Good)",
+				"split1@Good sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
