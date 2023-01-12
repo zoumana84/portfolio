@@ -15,18 +15,40 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "ds_KenFoodPrice_DBTarg",
+						"referenceName": "ds_KenFoodPrice_DBTarget",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "split1"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          date as date,",
+				"          admin1 as string,",
+				"          admin2 as string,",
+				"          market as string,",
+				"          latitude as double,",
+				"          longitude as double,",
+				"          category as string,",
+				"          commodity as string,",
+				"          unit as string,",
+				"          priceflag as string,",
+				"          pricetype as string,",
+				"          currency as string,",
+				"          price as double,",
+				"          usdprice as double",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
+				"source1 split(contains(array(toString(columns())), isNull(#item)),",
+				"     disjoint: false) ~> split1@(Null, Good)",
+				"split1@Good sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
