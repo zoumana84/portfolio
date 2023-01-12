@@ -295,7 +295,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "KenFoodPrice",
+						"referenceName": "KenFoodPr",
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"sink1": {

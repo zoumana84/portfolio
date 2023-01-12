@@ -1,5 +1,5 @@
 {
-	"name": "KenFoodPrice",
+	"name": "KenFoodPr",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
