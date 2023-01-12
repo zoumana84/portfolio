@@ -1,5 +1,5 @@
 {
-	"name": "ds_KenFoodPrice_c",
+	"name": "ds_KenFoodPrice_copied",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_injectionsa",

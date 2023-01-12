@@ -224,7 +224,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_KenFoodPrice_c",
+						"referenceName": "ds_KenFoodPrice_copied",
 						"type": "DatasetReference"
 					}
 				]
