@@ -264,7 +264,7 @@
 								{
 									"name": "kenFoodPricePQ",
 									"dataset": {
-										"referenceName": "ds_kenfoodprice_p",
+										"referenceName": "ds_kenfoodprice_pq",
 										"type": "DatasetReference"
 									},
 									"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['KenFoodPrice_PQ'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> kenFoodPricePQ"
